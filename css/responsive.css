@@ -1,0 +1,108 @@
+/* 响应式设计 */
+
+/* 平板设备 */
+@media (max-width: 768px) {
+    header h1 {
+        font-size: 36px;
+    }
+
+    .subtitle {
+        font-size: 16px;
+    }
+
+    main {
+        padding: 30px 20px;
+    }
+
+    section h2 {
+        font-size: 20px;
+    }
+
+    .photo-controls {
+        flex-direction: column;
+    }
+
+    .photo-controls .btn {
+        width: 100%;
+    }
+
+    .preview-actions {
+        flex-direction: column;
+    }
+
+    .preview-actions .btn {
+        width: 100%;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        width: 90%;
+        max-width: 300px;
+    }
+
+    .action-buttons .btn {
+        width: 100%;
+    }
+}
+
+/* 手机设备 */
+@media (max-width: 480px) {
+    .container {
+        padding: 20px 10px;
+    }
+
+    header h1 {
+        font-size: 28px;
+    }
+
+    .subtitle {
+        font-size: 14px;
+    }
+
+    main {
+        padding: 20px 15px;
+    }
+
+    section h2 {
+        font-size: 18px;
+    }
+
+    .btn {
+        padding: 12px 20px;
+        font-size: 14px;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="password"] {
+        font-size: 14px;
+        padding: 10px;
+    }
+
+    .text-box h3 {
+        font-size: 16px;
+    }
+
+    .text-box p {
+        font-size: 14px;
+    }
+
+    .carousel-btn {
+        width: 30px;
+        height: 30px;
+        font-size: 18px;
+    }
+}
+
+/* 触摸设备优化 */
+@media (hover: none) and (pointer: coarse) {
+    .btn {
+        min-height: 44px;
+        min-width: 44px;
+    }
+
+    .carousel-btn {
+        min-width: 44px;
+        min-height: 44px;
+    }
+}
+

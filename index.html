@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FaceCode｜面码 - 面相解析</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+    <!-- 背景视频 -->
+    <video id="background-video" autoplay loop muted playsinline>
+        <source id="video-source" src="" type="video/mp4">
+        您的浏览器不支持视频播放。
+    </video>
+
+    <!-- 内容遮罩 -->
+    <div class="overlay"></div>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <header>
+            <h1>FaceCode｜面码</h1>
+            <p class="subtitle">AI 面相解析 · 洞察命运玄机</p>
+        </header>
+
+        <main>
+            <!-- API Key 配置区 -->
+            <section class="api-config">
+                <h2>API 配置</h2>
+                <div class="form-group">
+                    <label for="jimeng-key">极梦 API Key</label>
+                    <input type="text" id="jimeng-key" placeholder="请输入极梦 API Key">
+                </div>
+                <div class="form-group">
+                    <label for="openai-key">OpenAI API Key</label>
+                    <input type="password" id="openai-key" placeholder="请输入 OpenAI API Key">
+                </div>
+                <div class="form-group checkbox">
+                    <label>
+                        <input type="checkbox" id="save-keys" checked>
+                        保存 API Key 到本地
+                    </label>
+                </div>
+            </section>
+
+            <!-- 拍照/上传区 -->
+            <section class="photo-section">
+                <h2>上传照片</h2>
+                <div class="photo-controls">
+                    <button id="camera-btn" class="btn btn-primary">
+                        <span class="icon">📷</span>
+                        使用摄像头
+                    </button>
+                    <button id="upload-btn" class="btn btn-secondary">
+                        <span class="icon">📁</span>
+                        上传照片
+                    </button>
+                </div>
+                <input type="file" id="file-input" accept="image/*" style="display: none;">
+                
+                <!-- 预览区 -->
+                <div id="preview-container" style="display: none;">
+                    <img id="preview-image" alt="预览图片">
+                    <div class="preview-actions">
+                        <button id="confirm-btn" class="btn btn-success">确认并开始分析</button>
+                        <button id="retake-btn" class="btn btn-secondary">重新拍摄</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- 摄像头视频流 -->
+            <div id="camera-container" style="display: none;">
+                <video id="camera-video" autoplay playsinline></video>
+                <canvas id="camera-canvas" style="display: none;"></canvas>
+                <div class="camera-controls">
+                    <button id="capture-btn" class="btn btn-primary">拍照</button>
+                    <button id="close-camera-btn" class="btn btn-secondary">关闭摄像头</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <p>&copy; 2025 FaceCode. All rights reserved.</p>
+        </footer>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/camera.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
+

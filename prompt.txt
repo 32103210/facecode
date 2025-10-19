@@ -1,0 +1,583 @@
+# FaceCode｜面码 — Cursor 可用 Prompt（HTML5 Web 应用实现）
+
+> 说明：这是给 Cursor（或类似的代码生成 AI）使用的完整 prompt，目标是生成一个 **可运行的 HTML5 Web 应用 MVP**，实现用户上传自拍、使用人脸关键点模型抽取五官特征、调用 GPT 生成玄学风格命运解读文案，并支持生成分享卡片与历史记录。文档包含需求、架构、API 规范、实现细节与验收标准。
+
+---
+
+## 1. 项目概述（给 Cursor 的快速背景）
+
+构建一个名为 **FaceCode（面码）** 的 HTML5 Web 应用 MVP：
+
+* 用户通过摄像头拍摄一张正脸自拍。
+* 后端分两步处理：
+  1. 调用极梦 API 生成人脸慢慢变老的状态图（需要用户提供的 API Key）。
+  2. 调用 OpenAI GPT-5 模型（需要用户提供的 API Key）生成面相解析，包含姻缘、事业、财运三个方面的详细解读。
+* Web 应用展示变老状态图和面相解析文案，支持生成可分享的卡片图（含原图、变老图、解析文案），并保存历史记录到本地存储。
+
+目标是 **最小可用产品（MVP）**：功能完整、代码结构清晰、响应式设计、可部署到静态托管平台（如 Vercel、Netlify）或自建服务器。
+
+---
+
+## 2. 基本约束与技术栈（必须遵守）
+
+* 前端：HTML5 + CSS3 + JavaScript（原生或使用现代框架如 React/Vue，建议使用原生或轻量级框架以简化部署）。
+* 后端：提供 REST 风格 API（可部署为 Vercel Serverless / Cloudflare Worker / AWS Lambda）；示例按 Node.js Express 或 Serverless 函数给出。
+* 人脸变老生成：调用极梦 API（JiMeng API）生成人脸慢慢变老的状态图，需要用户提供的极梦 API Key。
+* 面相解析生成：调用 OpenAI GPT-5 模型，根据人脸图片生成姻缘、事业、财运三个方面的详细解析，需要用户提供的 OpenAI API Key。
+* 存储：前端使用 localStorage 或 IndexedDB 保存历史记录；后端可选使用简单数据库（MongoDB / PostgreSQL）；但 MVP 可只保留图片 URL 与生成文本记录在本地。
+* 分享图：前端使用 HTML5 Canvas API 绘制分享卡片，使用 `canvas.toDataURL()` 或 `canvas.toBlob()` 导出图片，支持下载或复制到剪贴板。
+* 响应式设计：支持桌面端和移动端浏览器，使用 CSS Media Queries 实现自适应布局。
+
+---
+
+## 3. 交付物（Cursor 应输出）
+
+1. 完整的前端项目代码（必须包含 `index.html` 主页面、`result.html` 结果页面、`history.html` 历史记录页面、`js/api.js` API 调用模块、`js/canvas.js` Canvas 绘图模块、`css/style.css` 样式文件等）。
+2. 后端示例代码（Node.js，Express 风格或 Serverless 函数格式），包含：
+
+   * `/api/face/aging`：接收图片 URL/base64，调用极梦 API 生成人脸变老状态图并返回图片 URL。
+   * `/api/face/analyze`：接收原始图片，调用 OpenAI GPT-5 模型生成面相解析（姻缘、事业、财运）并返回文本。
+   * `/api/share/card`（可选）：生成分享图（如果选择用后端生成）。
+3. README：如何部署（本地运行、Vercel/Netlify 部署、后端 API 部署）和如何配置极梦 API Key 与 OpenAI API Key。
+4. 最低限度的单元/集成测试脚本（例如用 Jest 或简单请求脚本保证关键路由工作）。
+
+---
+
+## 4. API 设计（详细契约）
+
+### 4.1 `POST /api/face/aging`
+
+* **用途**：上传图片，调用极梦 API 生成人脸变老状态图。
+* **请求**：
+
+```json
+{ 
+  "image": "data:image/jpeg;base64,/...",
+  "jimeng_api_key": "用户提供的极梦 API Key"
+}
+```
+
+* **响应（200）示例**：
+
+```json
+{
+  "ok": true,
+  "original_image": "原始图片 URL",
+  "aged_images": [
+    { "age": "30岁", "url": "变老图片 URL 1" },
+    { "age": "50岁", "url": "变老图片 URL 2" },
+    { "age": "70岁", "url": "变老图片 URL 3" }
+  ]
+}
+```
+
+* **实现细节**：
+
+  1. 后端接收 base64 图片和极梦 API Key。
+  2. 调用极梦 API，传入图片生成不同年龄段的人脸变老状态图。
+  3. 返回原始图片和多个变老状态图的 URL 列表。
+  4. 处理极梦 API 可能的错误（如 API Key 无效、图片格式不支持等）。
+
+---
+
+### 4.2 `POST /api/face/analyze`
+
+* **用途**：根据人脸图片调用 GPT-5 生成面相解析（姻缘、事业、财运）。
+* **请求**：
+
+```json
+{
+  "image": "data:image/jpeg;base64,/...",
+  "openai_api_key": "用户提供的 OpenAI API Key"
+}
+```
+
+* **响应**：
+
+```json
+{ 
+  "ok": true, 
+  "analysis": {
+    "marriage": "姻缘方面的解析文字...",
+    "career": "事业方面的解析文字...",
+    "wealth": "财运方面的解析文字..."
+  }
+}
+```
+
+* **实现细节**：
+
+  1. 后端接收图片和 OpenAI API Key。
+  2. 调用 OpenAI GPT-5 模型（使用 Vision 能力），传入图片和面相解析 Prompt。
+  3. Prompt 要求 GPT-5 分别从姻缘、事业、财运三个方面进行解析，每个方面 100-150 字。
+  4. 为防止违规内容，在 Prompt 中加入安全约束：禁止断言医疗、违法行为、绝对未来事件等。
+  5. 解析 GPT-5 返回的结构化数据并返回给前端。
+
+---
+
+## 5. GPT-5 Prompt 模板（在后端传给 GPT-5）
+
+> 把下面的模板直接放进后端调用 GPT-5 的 `messages` 中，使用 Vision 能力传入人脸图片。
+
+```
+System: 你是一位温柔且神秘的AI面相师，专注于从人脸面相特征生成玄学风格的命运解读。
+
+User: 请根据这张人脸图片，从面相学角度进行详细解析。请分别从以下三个方面进行解读，每个方面 100-150 字：
+
+1. **姻缘**：分析此人的感情运势、婚姻状况、桃花运等。
+2. **事业**：分析此人的事业发展、职场运势、领导力等。
+3. **财运**：分析此人的财富运势、理财能力、偏财正财等。
+
+要求：
+1) 每个方面独立成段，100-150 字。
+2) 语气神秘但温柔，用词带有玄学氛围。
+3) 不得宣称绝对结果，仅做温柔提示和建议。
+4) 禁止提及具体医疗建议、违法预测或绝对时间（如"你将在XX年"）。
+5) 以 JSON 格式返回：{"marriage": "...", "career": "...", "wealth": "..."}
+
+请直接返回 JSON 格式的解析结果。
+```
+
+后端需要使用 GPT-5 的 Vision 能力，将图片和 Prompt 一起发送给 API。
+
+---
+
+## 6. 前端实现细节（页面与行为）
+
+### 页面列表
+
+* `index.html`：上传/拍照界面，API Key 配置区（极梦 API Key 和 OpenAI API Key），开始按钮。**背景使用 16:9 比例的 MP4 视频作为动态底图循环播放**。
+* `loading.html`：**加载等待页面，全屏播放预加载视频，等待 API 调用结果返回**。视频由用户提供，支持配置替换。
+* `result.html`：展示原始图片、变老状态图（多张，可滑动查看）、面相解析（姻缘、事业、财运三个部分）、分享按钮、保存历史按钮。**使用用户提供的 UI 图片作为展示框架，内容位置通过配置文件定义**。
+* `history.html`（可选）：显示已生成的历史记录列表。
+
+### 页面行为
+
+1. 用户打开 `index.html`，输入极梦 API Key 和 OpenAI API Key（可保存到 localStorage）。
+2. 用户选择通过 `<input type="file">` 上传图片或使用 `getUserMedia()` API 调用摄像头拍照。
+3. **拍照完成后，立即跳转到加载页面（loading.html）**：
+   - 播放预加载视频（全屏播放，循环播放）
+   - 视频由用户提供，路径在配置文件中设置
+   - 视频播放期间，后台同时调用两个 API
+4. 前端将图片转为 base64，**并行调用**两个 API：
+   - 调用 `/api/face/aging` 生成变老状态图
+   - 调用 `/api/face/analyze` 生成面相解析（姻缘、事业、财运）
+5. 等待两个 API 都返回结果（使用 Promise.all）。
+6. **API 结果返回后**，预加载视频播放完当前循环后停止，自动跳转到 `result.html`。
+7. 在 `result.html` 中：
+   - 使用用户提供的 UI 图片作为结果展示的背景/框架
+   - 在 UI 图片上叠加展示：原始图片、变老图片（可左右滑动查看不同年龄）、面相解析文字（姻缘、事业、财运）
+   - UI 图片的位置布局通过配置文件定义
+8. 用户点击"分享"时，使用 HTML5 Canvas API 绘制卡片（包含原图、选中的变老图、解析文案、LOGO），然后使用 `canvas.toBlob()` 或 `canvas.toDataURL()` 导出图片，提供下载按钮或复制到剪贴板功能。
+
+### 前端实现要点
+
+* **首页视频底图（index.html）**：
+  - 使用 HTML5 `<video>` 标签作为页面背景，视频比例为 16:9
+  - 设置 `autoplay`、`loop`、`muted`、`playsinline` 属性实现自动循环播放
+  - 视频应覆盖整个页面背景，使用 CSS `object-fit: cover` 保持比例并填充屏幕
+  - 前端内容层叠在视频之上，使用半透明遮罩确保内容可读性
+  - 视频文件路径在 `js/config.js` 中配置，默认为 `assets/videos/background.mp4`
+
+* **加载页预加载视频（loading.html）**：
+  - 全屏播放预加载视频，视频覆盖整个屏幕
+  - 设置 `autoplay`、`loop`、`muted`、`playsinline` 属性
+  - 视频文件路径在 `js/config.js` 中配置，默认为 `assets/videos/loading.mp4`
+  - 后台并行调用极梦 API 和 OpenAI API
+  - 使用 `Promise.all` 等待两个 API 都返回结果
+  - API 结果返回后，等待视频播放完当前循环（监听 `ended` 事件或使用 `timeupdate` 判断接近结尾）
+  - 视频循环结束后，将结果数据通过 sessionStorage 或 URL 参数传递给 result.html 并跳转
+
+* **结果页 UI 框架（result.html）**：
+  - 使用用户提供的 UI 图片作为结果展示的框架/模板
+  - UI 图片路径在 `js/config.js` 中配置，默认为 `assets/images/result-ui.png`
+  - 在 `js/config.js` 中定义内容区域的位置配置（使用百分比或像素坐标）：
+    ```javascript
+    RESULT_LAYOUT: {
+      originalImage: { top: '10%', left: '5%', width: '30%', height: '40%' },
+      agedImagesCarousel: { top: '10%', left: '40%', width: '55%', height: '40%' },
+      marriageText: { top: '55%', left: '5%', width: '28%', height: 'auto' },
+      careerText: { top: '55%', left: '36%', width: '28%', height: 'auto' },
+      wealthText: { top: '55%', left: '67%', width: '28%', height: 'auto' }
+    }
+    ```
+  - 使用绝对定位将内容元素叠加在 UI 图片的指定位置上
+  - 支持通过修改配置文件调整内容位置，无需修改代码
+
+* 图片上传要压缩（限制 1MB 内），使用 Canvas API 进行客户端压缩后再发送 base64 到后端。
+* 实现友好的加载态（loading spinner）与错误提示（如 API Key 无效、图片无法识别、网络错误等）。
+* 处理摄像头权限请求，如果用户拒绝则优雅降级到仅支持文件上传。
+* 使用 localStorage 保存 API Key 配置和历史记录（包含原始图片、变老图片、解析文案、时间戳）。
+* 响应式设计：在移动端优化触摸操作和图片滑动，在桌面端优化鼠标交互。视频和图片底图在不同屏幕尺寸下自适应显示。
+* 变老图片展示使用轮播图或滑动组件，支持左右切换查看不同年龄段的效果。
+
+---
+
+## 7. 资源配置接口
+
+### 7.1 配置文件结构（js/config.js）
+
+```javascript
+const CONFIG = {
+  // API 端点配置
+  API_BASE_URL: 'http://localhost:3000/api',
+  
+  // 视频资源配置
+  BACKGROUND_VIDEO: 'assets/videos/background.mp4',  // 首页视频底图路径
+  LOADING_VIDEO: 'assets/videos/loading.mp4',  // 加载页预加载视频路径
+  
+  // 结果页 UI 配置
+  RESULT_UI_IMAGE: 'assets/images/result-ui.png',  // 结果页 UI 框架图片路径
+  
+  // 结果页内容布局配置（使用百分比，相对于 UI 图片容器）
+  RESULT_LAYOUT: {
+    originalImage: { 
+      top: '10%', 
+      left: '5%', 
+      width: '30%', 
+      height: '40%' 
+    },
+    agedImagesCarousel: { 
+      top: '10%', 
+      left: '40%', 
+      width: '55%', 
+      height: '40%' 
+    },
+    marriageText: { 
+      top: '55%', 
+      left: '5%', 
+      width: '28%', 
+      height: 'auto',
+      fontSize: '14px',
+      color: '#333333'
+    },
+    careerText: { 
+      top: '55%', 
+      left: '36%', 
+      width: '28%', 
+      height: 'auto',
+      fontSize: '14px',
+      color: '#333333'
+    },
+    wealthText: { 
+      top: '55%', 
+      left: '67%', 
+      width: '28%', 
+      height: 'auto',
+      fontSize: '14px',
+      color: '#333333'
+    }
+  },
+  
+  // 其他配置
+  MAX_IMAGE_SIZE: 1024 * 1024,  // 1MB
+  RETRY_TIMES: 2,
+  REQUEST_TIMEOUT: 30000  // 30秒
+};
+```
+
+### 7.2 资源要求规范
+
+* **首页背景视频（background.mp4）**：
+  - 格式：MP4（H.264 编码）
+  - 比例：16:9
+  - 建议分辨率：1920x1080 或 1280x720
+  - 建议文件大小：< 5MB（经过压缩优化）
+  - 时长：10-30 秒循环播放
+
+* **加载页预加载视频（loading.mp4）**：
+  - 格式：MP4（H.264 编码）
+  - 建议分辨率：1920x1080 或 1280x720
+  - 建议文件大小：< 10MB（经过压缩优化）
+  - 时长：建议 5-15 秒（会循环播放直到 API 返回）
+  - 用途：在等待 API 调用结果期间全屏播放
+
+* **结果页 UI 框架图片（result-ui.png）**：
+  - 格式：PNG（支持透明）或 JPG
+  - 建议分辨率：1920x1080 或更高
+  - 建议文件大小：< 1MB（经过压缩优化）
+  - 用途：作为结果展示的背景框架，内容将叠加在此图片上
+  - 设计建议：在图片上预留清晰的内容区域（原图区、变老图区、三个文字区）
+
+### 7.3 替换资源步骤
+
+#### 替换首页背景视频
+1. 准备 16:9 比例的 MP4 视频文件（建议 1920x1080，< 5MB）
+2. 将视频文件放入 `assets/videos/` 目录
+3. 修改 `js/config.js` 中的 `BACKGROUND_VIDEO` 配置项
+4. 刷新页面查看效果
+
+#### 替换加载页预加载视频
+1. 准备预加载视频 MP4 文件（建议 1920x1080，< 10MB，5-15秒）
+2. 将视频文件放入 `assets/videos/` 目录
+3. 修改 `js/config.js` 中的 `LOADING_VIDEO` 配置项
+4. 测试拍照后的加载流程
+
+#### 替换结果页 UI 框架图片
+1. 准备 UI 框架图片（PNG/JPG，建议 1920x1080，< 1MB）
+2. 将图片文件放入 `assets/images/` 目录
+3. 修改 `js/config.js` 中的 `RESULT_UI_IMAGE` 配置项
+4. 根据新 UI 图片调整 `RESULT_LAYOUT` 配置中的位置参数
+5. 刷新结果页查看效果
+
+### 7.4 布局配置说明
+
+`RESULT_LAYOUT` 配置项用于定义结果页各内容区域的位置和样式：
+
+- **位置单位**：使用百分比（相对于 UI 图片容器）或像素值
+- **必填字段**：`top`、`left`、`width`
+- **可选字段**：`height`（auto 表示自动高度）、`fontSize`、`color` 等样式属性
+- **调整方法**：根据 UI 图片的实际布局，修改各区域的位置参数
+
+---
+
+## 8. 安全、合规与风险控制
+
+* **Prompt 安全**：在调用 GPT-5 的 Prompt 里显式写明禁止医疗、法律、明确未来事件、极端言论。
+* **API Key 安全**：用户提供的 API Key 仅在前端保存到 localStorage，后端不存储。前端每次请求时携带 API Key。
+* **图像隐私**：默认不公开用户原图；所有图片处理仅在用户会话期间进行，不做长期保存。
+* **滥用检测**：对频繁上传同一 IP 做限速；后端记录调用频次并设置阈值。
+* **内容审核**：对 GPT-5 输出进行简单关键词过滤（涉黄、暴力、恐怖等）。若触发，返回一个更中性版本。
+
+---
+
+## 9. 部署与环境变量
+
+后端需要以下环境变量（可选，因为 API Key 由用户提供）：
+
+* `CORS_ORIGIN`（允许的前端域名，用于 CORS 配置）
+* `RATE_LIMIT_MAX`（限速阈值，可选）
+* `STORAGE_BUCKET_URL`（如果需要临时存储图片，可选）
+
+注意：极梦 API Key 和 OpenAI API Key 由用户在前端输入，前端每次请求时携带。
+
+部署说明（简要）:
+
+1. 前端部署：
+   * 静态托管：将前端文件（HTML/CSS/JS）上传到 Vercel、Netlify、GitHub Pages 或任何静态托管服务。
+   * 本地开发：使用 `python -m http.server` 或 `npx serve` 启动本地服务器。
+   * 配置 API 端点：在 `js/config.js` 中设置后端 API 的基础 URL。
+
+2. 后端部署：
+   * 启动后端：`npm install` -> `npm run start` 或部署为 Serverless 函数（Vercel/Netlify Functions、AWS Lambda）。
+   * 配置 CORS：确保后端允许前端域名的跨域请求。
+   * HTTPS：生产环境必须使用 HTTPS（静态托管平台通常自动提供）。
+   * 后端作为代理：后端接收前端传来的 API Key，代理调用极梦 API 和 OpenAI API，避免前端直接暴露 API 调用细节。
+
+---
+
+## 10. 验收标准（QA）
+
+1. **首页背景**：首页视频底图能正常循环播放，16:9 比例自适应不同屏幕尺寸，内容在视频上层清晰可见。
+2. **加载页流程**：
+   - 拍照后立即跳转到加载页，预加载视频全屏播放并循环
+   - 后台并行调用极梦 API 和 OpenAI API
+   - API 结果返回后，视频播放完当前循环后自动跳转到结果页
+   - 如果 API 调用失败，显示友好的错误提示
+3. **结果页 UI**：
+   - 结果页使用用户提供的 UI 框架图片作为背景
+   - 原始图片、变老图片、三个文字区域正确显示在配置的位置上
+   - 内容位置通过 `RESULT_LAYOUT` 配置控制，修改配置后位置正确更新
+4. **资源替换**：
+   - 通过修改 `js/config.js` 能成功替换首页背景视频
+   - 通过修改 `js/config.js` 能成功替换加载页预加载视频
+   - 通过修改 `js/config.js` 能成功替换结果页 UI 框架图片
+   - 通过修改 `RESULT_LAYOUT` 配置能调整内容区域位置
+5. 用户能上传一张正脸照片或使用摄像头拍照，输入 API Key 后成功调用极梦 API 生成变老状态图。
+6. 用户能看到多张不同年龄段的变老图片，可以左右滑动查看。
+7. 后端能调用 GPT-5 生成姻缘、事业、财运三个方面的面相解析，每个方面 100-150 字。
+8. Web 应用能生成分享图片（包含原图、变老图、解析文案）并允许用户下载或复制。
+9. 系统具备基础的错误提示（API Key 无效、网络错误等）与限速机制。
+10. 应用在主流浏览器（Chrome、Firefox、Safari、Edge）和移动端浏览器上正常运行。
+11. 响应式设计在不同屏幕尺寸下表现良好，移动端图片滑动流畅，视频和 UI 图片自适应。
+12. API Key 能保存到 localStorage，下次访问时自动填充。
+
+---
+
+## 11. 额外指令给 Cursor（代码生成细节）
+
+请 Cursor 在生成代码时注意：
+
+* 使用清晰的文件结构并在 `README.md` 中写明如何运行、如何配置极梦 API Key 和 OpenAI API Key、如何替换视频和图片资源、如何调整结果页布局。
+* 所有网络请求（前端）需有超时与重试策略（2 次重试），使用 `fetch` API 并实现错误处理。
+* 在后端 `controllers/aging.js` 中实现极梦 API 调用逻辑，处理图片上传和变老图片生成。
+* 在后端 `controllers/analyze.js` 中放入 GPT-5 Prompt 模板（见第 5 节），使用 OpenAI Vision API，并实现简单的输出审查函数 `sanitizeText(text)`。
+* 提供一个 `mock` 模式（`NODE_ENV=mock`）允许在没有真实 API Key 的情况下返回示例数据，便于本地开发。
+* 前端代码使用现代 ES6+ 语法，但确保在目标浏览器中兼容（可使用 Babel 转译）。
+* CSS 使用 Flexbox 或 Grid 布局，确保响应式设计。
+* 实现渐进式增强：基础功能在所有浏览器中可用，高级功能（如摄像头）在支持的浏览器中启用。
+* 前端实现图片轮播/滑动组件，支持触摸滑动和鼠标拖拽，展示多张变老图片。
+* **加载页实现要点**：
+  - 创建独立的 `loading.html` 页面
+  - 实现视频播放控制逻辑：API 返回后等待当前循环结束再跳转
+  - 使用 `Promise.all` 并行调用两个 API
+  - 通过 sessionStorage 在页面间传递数据
+  - 处理 API 调用超时和错误情况
+* **结果页布局实现**：
+  - 使用绝对定位将内容叠加在 UI 图片上
+  - 从 `CONFIG.RESULT_LAYOUT` 读取位置配置并动态应用
+  - 支持百分比和像素两种单位
+  - 确保在不同屏幕尺寸下布局正确
+* **资源配置**：
+  - 在 `js/config.js` 中提供完整的配置接口
+  - 提供占位符资源文件（background.mp4、loading.mp4、result-ui.png）
+  - 在 README 中详细说明如何替换各种资源
+  - 提供布局配置的调整指南
+
+---
+
+## 12. 示例返回（便于测试）
+
+* `/api/face/aging` 示例响应：
+
+```json
+{
+  "ok": true,
+  "original_image": "https://example.com/original.jpg",
+  "aged_images": [
+    { "age": "30岁", "url": "https://example.com/aged_30.jpg" },
+    { "age": "50岁", "url": "https://example.com/aged_50.jpg" },
+    { "age": "70岁", "url": "https://example.com/aged_70.jpg" }
+  ]
+}
+```
+
+* `/api/face/analyze` 示例响应：
+
+```json
+{
+  "ok": true,
+  "analysis": {
+    "marriage": "从面相来看，您的眉眼温和，唇角微扬，这是桃花运旺盛的象征。感情路上虽有波折，但终能遇到心仪之人。建议在选择伴侣时多听从内心，不要过于追求完美。婚后需注意沟通，以柔克刚，方能白头偕老。",
+    "career": "您的额头饱满，鼻梁挺直，这是事业有成的面相。在职场上有较强的领导力和决策能力，适合从事管理或创业。但需注意不要过于刚强，学会倾听他人意见。中年后事业将迎来高峰，财富也会随之而来。",
+    "wealth": "从鼻相来看，您的财运较为稳定，正财运佳。适合通过稳健投资积累财富，不宜冒险投机。中年后财运会有明显提升，但需注意理财规划。建议多行善事，财富自然会源源不断。"
+  }
+}
+```
+
+---
+
+## 13. 前端项目结构示例
+
+```
+/
+├── index.html              # 主页面（上传/拍照 + API Key 配置，视频底图）
+├── loading.html            # 加载页面（预加载视频全屏播放，等待 API 结果）
+├── result.html             # 结果展示页面（使用 UI 框架图片，叠加内容）
+├── history.html            # 历史记录页面
+├── css/
+│   ├── style.css          # 主样式文件
+│   ├── responsive.css     # 响应式样式
+│   ├── carousel.css       # 图片轮播样式
+│   ├── loading.css        # 加载页样式
+│   └── result-layout.css  # 结果页布局样式
+├── js/
+│   ├── config.js          # 配置文件（API 端点、视频/图片路径、布局配置等）
+│   ├── api.js             # API 调用模块
+│   ├── camera.js          # 摄像头功能模块
+│   ├── canvas.js          # Canvas 绘图模块
+│   ├── carousel.js        # 图片轮播组件
+│   ├── loading.js         # 加载页逻辑（视频控制、API 调用）
+│   ├── result.js          # 结果页逻辑（布局渲染、数据展示）
+│   ├── storage.js         # localStorage 管理（API Key + 历史记录）
+│   └── main.js            # 主逻辑
+├── assets/
+│   ├── videos/
+│   │   ├── background.mp4 # 首页背景视频（16:9 比例）
+│   │   └── loading.mp4    # 加载页预加载视频
+│   ├── images/
+│   │   ├── result-ui.png  # 结果页 UI 框架图片
+│   │   └── ...            # 其他图片资源
+│   └── fonts/             # 字体文件
+└── README.md              # 项目说明
+```
+
+## 14. README 快速片段（放在项目根）
+
+```markdown
+# FaceCode｜面码 - HTML5 Web 应用 MVP
+
+基于人脸变老生成和 AI 面相解析的玄学风格 Web 应用。
+
+## 功能特性
+
+- 📸 支持上传照片或摄像头拍照
+- 👴 使用极梦 API 生成人脸变老状态图（多个年龄段）
+- 🔮 使用 GPT-5 生成面相解析（姻缘、事业、财运）
+- 🎨 生成精美分享卡片
+- 📱 响应式设计，支持桌面和移动端
+- 💾 本地历史记录保存
+- 🔑 支持用户自定义 API Key
+
+## 快速开始
+
+### 前端运行
+
+1. 克隆项目
+2. 配置 API 端点：编辑 `js/config.js`
+3. 启动本地服务器：
+   ```bash
+   npx serve
+   # 或
+   python -m http.server 8000
+   ```
+4. 访问 `http://localhost:8000`
+5. 在界面中输入您的极梦 API Key 和 OpenAI API Key
+
+### API Key 获取
+
+- **极梦 API Key**：访问极梦官网注册并获取 API Key
+- **OpenAI API Key**：访问 OpenAI 官网注册并获取 API Key（需要支持 GPT-5 和 Vision 功能）
+
+### 自定义资源配置
+
+#### 替换首页背景视频
+
+1. 准备 16:9 比例的 MP4 视频文件（建议 1920x1080，< 5MB）
+2. 将视频文件放入 `assets/videos/` 目录
+3. 修改 `js/config.js` 中的 `BACKGROUND_VIDEO` 配置项
+4. 刷新页面查看效果
+
+#### 替换加载页预加载视频
+
+1. 准备预加载视频 MP4 文件（建议 1920x1080，< 10MB，5-15秒）
+2. 将视频文件放入 `assets/videos/` 目录
+3. 修改 `js/config.js` 中的 `LOADING_VIDEO` 配置项
+4. 测试拍照后的加载流程
+
+#### 替换结果页 UI 框架图片
+
+1. 准备 UI 框架图片（PNG/JPG，建议 1920x1080，< 1MB）
+2. 将图片文件放入 `assets/images/` 目录
+3. 修改 `js/config.js` 中的 `RESULT_UI_IMAGE` 配置项
+4. 根据新 UI 图片调整 `RESULT_LAYOUT` 配置中的位置参数
+5. 刷新结果页查看效果
+
+#### 调整结果页内容布局
+
+在 `js/config.js` 中修改 `RESULT_LAYOUT` 配置项：
+
+```javascript
+RESULT_LAYOUT: {
+  originalImage: { top: '10%', left: '5%', width: '30%', height: '40%' },
+  agedImagesCarousel: { top: '10%', left: '40%', width: '55%', height: '40%' },
+  marriageText: { top: '55%', left: '5%', width: '28%', height: 'auto', fontSize: '14px', color: '#333' },
+  careerText: { top: '55%', left: '36%', width: '28%', height: 'auto', fontSize: '14px', color: '#333' },
+  wealthText: { top: '55%', left: '67%', width: '28%', height: 'auto', fontSize: '14px', color: '#333' }
+}
+```
+
+- 使用百分比单位相对于 UI 图片容器定位
+- 可调整 `top`、`left`、`width`、`height` 控制位置和大小
+- 可调整 `fontSize`、`color` 等样式属性
+
+### 后端部署
+
+详见后端目录的 README。
+
+## 技术栈
+
+- 前端：HTML5 + CSS3 + JavaScript (ES6+)
+- 后端：Node.js + Express
+- AI 服务：极梦 API (人脸变老) + OpenAI GPT-5 (面相解析)
+```

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>正在分析中... - FaceCode</title>
+    <link rel="stylesheet" href="css/loading.css">
+</head>
+<body>
+    <!-- 预加载视频 -->
+    <video id="loading-video" autoplay loop muted playsinline>
+        <source id="video-source" src="" type="video/mp4">
+        您的浏览器不支持视频播放。
+    </video>
+
+    <!-- 加载提示 -->
+    <div class="loading-overlay">
+        <div class="loading-text">
+            <h2>正在分析您的面相...</h2>
+            <p id="loading-status">正在生成变老状态图...</p>
+            <div class="loading-spinner"></div>
+        </div>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/loading.js"></script>
+</body>
+</html>
+

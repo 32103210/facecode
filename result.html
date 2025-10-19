@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面相解析结果 - FaceCode</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/carousel.css">
+    <link rel="stylesheet" href="css/result-layout.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="result-page">
+    <!-- UI 框架图片容器 -->
+    <div id="result-ui-container">
+        <img id="result-ui-image" src="" alt="结果展示框架">
+        
+        <!-- 内容叠加层 -->
+        <div id="content-overlay">
+            <!-- 原始图片 -->
+            <div id="original-image-container" class="content-box">
+                <img id="original-image" src="" alt="原始照片">
+            </div>
+
+            <!-- 变老图片轮播 -->
+            <div id="aged-images-carousel" class="content-box">
+                <div class="carousel-container">
+                    <button class="carousel-btn prev" id="carousel-prev">‹</button>
+                    <div class="carousel-track-container">
+                        <div class="carousel-track" id="carousel-track">
+                            <!-- 动态插入变老图片 -->
+                        </div>
+                    </div>
+                    <button class="carousel-btn next" id="carousel-next">›</button>
+                </div>
+                <div class="carousel-indicators" id="carousel-indicators">
+                    <!-- 动态插入指示器 -->
+                </div>
+            </div>
+
+            <!-- 姻缘解析 -->
+            <div id="marriage-text" class="content-box text-box">
+                <h3>姻缘</h3>
+                <p id="marriage-content"></p>
+            </div>
+
+            <!-- 事业解析 -->
+            <div id="career-text" class="content-box text-box">
+                <h3>事业</h3>
+                <p id="career-content"></p>
+            </div>
+
+            <!-- 财运解析 -->
+            <div id="wealth-text" class="content-box text-box">
+                <h3>财运</h3>
+                <p id="wealth-content"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="action-buttons">
+        <button id="share-btn" class="btn btn-primary">
+            <span class="icon">📤</span>
+            分享结果
+        </button>
+        <button id="save-btn" class="btn btn-secondary">
+            <span class="icon">💾</span>
+            保存到历史
+        </button>
+        <button id="back-btn" class="btn btn-secondary">
+            <span class="icon">🏠</span>
+            返回首页
+        </button>
+    </div>
+
+    <!-- 分享画布（隐藏） -->
+    <canvas id="share-canvas" style="display: none;"></canvas>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/carousel.js"></script>
+    <script src="js/canvas.js"></script>
+    <script src="js/result.js"></script>
+</body>
+</html>
+
