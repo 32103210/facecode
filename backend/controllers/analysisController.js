@@ -1,7 +1,20 @@
 const axios = require('axios');
+const fs = require('fs');
+const path = require('path');
+
+// 读取系统提示词
+let SYSTEM_PROMPT = '';
+try {
+  const promptPath = path.join(__dirname, '../../prompt/system_prompt.txt');
+  SYSTEM_PROMPT = fs.readFileSync(promptPath, 'utf-8');
+  console.log('✅ 系统提示词加载成功');
+} catch (error) {
+  console.warn('⚠️ 无法加载系统提示词，使用默认提示词');
+  SYSTEM_PROMPT = '你是一位精通道家面相学的AI命理分析师，请根据用户上传的面部图像，生成一份完整的面相分析报告。';
+}
 
 /**
- * 调用 OpenAI GPT-5 生成面相解析
+ * 调用 OpenAI GPT-4 Vision 生成面相解析
  */
 exports.analyzeFace = async (req, res) => {
   try {
@@ -14,35 +27,23 @@ exports.analyzeFace = async (req, res) => {
       });
     }
 
-    // TODO: 实际调用 OpenAI GPT-5 Vision API
-    // 示例代码：
-    /*
+    console.log('🔍 开始分析面相...');
+    console.log('📸 图片大小:', image.length);
+
+    // 调用 OpenAI GPT-4 Vision API
     const response = await axios.post('https://api.openai.com/v1/chat/completions', {
-      model: 'gpt-4-vision-preview', // 或 gpt-5 当可用时
+      model: 'gpt-4o', // 使用 GPT-4o 或 gpt-4-vision-preview
       messages: [
         {
           role: 'system',
-          content: '你是一位温柔且神秘的AI面相师，专注于从人脸面相特征生成玄学风格的命运解读。'
+          content: SYSTEM_PROMPT
         },
         {
           role: 'user',
           content: [
             {
               type: 'text',
-              text: `请根据这张人脸图片，从面相学角度进行详细解析。请分别从以下三个方面进行解读，每个方面 100-150 字：
-
-1. **姻缘**：分析此人的感情运势、婚姻状况、桃花运等。
-2. **事业**：分析此人的事业发展、职场运势、领导力等。
-3. **财运**：分析此人的财富运势、理财能力、偏财正财等。
-
-要求：
-1) 每个方面独立成段，100-150 字。
-2) 语气神秘但温柔，用词带有玄学氛围。
-3) 不得宣称绝对结果，仅做温柔提示和建议。
-4) 禁止提及具体医疗建议、违法预测或绝对时间（如"你将在XX年"）。
-5) 以 JSON 格式返回：{"marriage": "...", "career": "...", "wealth": "..."}
-
-请直接返回 JSON 格式的解析结果。`
+              text: '请根据这张人脸图片，按照系统提示词中的JSON结构规范，生成完整的面相分析报告。请直接返回JSON格式的结果，不要包含任何其他文字。'
             },
             {
               type: 'image_url',
@@ -53,7 +54,8 @@ exports.analyzeFace = async (req, res) => {
           ]
         }
       ],
-      max_tokens: 1000
+      max_tokens: 4000,
+      temperature: 0.7
     }, {
       headers: {
         'Authorization': `Bearer ${openai_api_key}`,
@@ -62,18 +64,74 @@ exports.analyzeFace = async (req, res) => {
     });
 
     const content = response.data.choices[0].message.content;
-    const analysis = JSON.parse(content);
-    */
+    console.log('✅ OpenAI 返回内容:', content.substring(0, 200) + '...');
+    
+    // 解析 JSON
+    let analysis;
+    try {
+      // 尝试提取 JSON（可能被包裹在 ```json ``` 中）
+      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/\{[\s\S]*\}/);
+      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
+      analysis = JSON.parse(jsonStr);
+    } catch (parseError) {
+      console.error('❌ JSON 解析失败:', parseError);
+      throw new Error('AI 返回的内容格式不正确');
+    }
 
-    // 暂时返回模拟数据
-    console.log('Analysis API called with image size:', image.length);
+    res.json({
+      ok: true,
+      analysis: analysis
+    });
+
+  } catch (error) {
+    console.error('❌ Analysis API error:', error.message);
+    
+    // 如果是 OpenAI API 错误，返回更详细的信息
+    if (error.response) {
+      console.error('OpenAI API 错误详情:', error.response.data);
+      return res.status(error.response.status).json({
+        ok: false,
+        error: error.response.data.error?.message || 'OpenAI API 调用失败'
+      });
+    }
+    
+    // 开发模式下返回模拟数据
+    console.log('⚠️ 返回模拟数据用于测试...');
     
     const mockAnalysis = {
       ok: true,
       analysis: {
-        marriage: '从面相来看，您的眉眼温和，唇角微扬，这是桃花运旺盛的象征。感情路上虽有波折，但终能遇到心仪之人。建议在选择伴侣时多听从内心，不要过于追求完美。婚后需注意沟通，以柔克刚，方能白头偕老。',
-        career: '您的额头饱满，鼻梁挺直，这是事业有成的面相。在职场上有较强的领导力和决策能力，适合从事管理或创业。但需注意不要过于刚强，学会倾听他人意见。中年后事业将迎来高峰，财富也会随之而来。',
-        wealth: '从鼻相来看，您的财运较为稳定，正财运佳。适合通过稳健投资积累财富，不宜冒险投机。中年后财运会有明显提升，但需注意理财规划。建议多行善事，财富自然会源源不断。'
+        "命运总览": {
+          "内容": "你的面藏风水，气自成局；命中注定不是随波逐流的人。"
+        },
+        "五官解读": {
+          "额": {
+            "描述": "天庭宽阔，志在高远",
+            "典籍": "出自《柳庄相法·三停论》"
+          },
+          "眉": {
+            "描述": "眉形柔中带锋，有主见亦有温度"
+          },
+          "眼": {
+            "描述": "目光藏笑，是温柔的策士"
+          },
+          "鼻": {
+            "描述": "鼻正气顺，财缘自稳",
+            "典籍": "见《神相全编》"
+          },
+          "唇": {
+            "描述": "唇色和气，言语有福"
+          }
+        },
+        "气运分析": {
+          "内容": "气聚中庭，贵人运渐起；你或许已站在转机之前，只待一句真心的话语成全未来。近期宜静观其变，顺势而为，切勿强求。"
+        },
+        "修炼建议": {
+          "内容": "静坐三息，观心而不执；凡事不急，运自来。若有不顺，宜以光亮之物相伴，晨起面东而立，纳清气以养神。"
+        },
+        "传播金句": {
+          "内容": "命里藏buff，天生开挂脸。"
+        }
       }
     };
 

@@ -2,21 +2,20 @@
 
 const Storage = {
   // API Key 相关
-  saveApiKeys(jimengKey, openaiKey) {
-    localStorage.setItem('jimeng_api_key', jimengKey);
+  saveApiKeys(_, openaiKey) {
+    // 不再保存极梦 API Key
     localStorage.setItem('openai_api_key', openaiKey);
   },
 
   getApiKeys() {
     return {
-      jimengKey: localStorage.getItem('jimeng_api_key') || '',
-      openaiKey: localStorage.getItem('openai_api_key') || ''
+      openaiKey: localStorage.getItem('openai_api_key') || sessionStorage.getItem('temp_openai_key') || ''
     };
   },
 
   clearApiKeys() {
-    localStorage.removeItem('jimeng_api_key');
     localStorage.removeItem('openai_api_key');
+    sessionStorage.removeItem('temp_openai_key');
   },
 
   // 历史记录相关

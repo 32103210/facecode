@@ -1,0 +1,1212 @@
+{
+  "metadata": {
+    "version": "1.0",
+    "source": "道教面相学形命映射知识库",
+    "encoding": "UTF-8",
+    "purpose": "LLM RAG检索增强生成",
+    "last_updated": "2025-10-19"
+  },
+
+  "fundamental_principles": {
+    "形生气": {
+      "definition": "Physical form manifests qi vitality - 面部形态结构反映先天禀赋与后天气血状态",
+      "logic_chain": "骨相（先天）→ 肉相（后天养护）→ 气相（当下状态）",
+      "keywords": ["骨相", "肉相", "气血", "先天", "后天"]
+    },
+    "气转命": {
+      "definition": "Qi vitality transforms destiny - 气色流转决定当下及短期运势吉凶",
+      "logic_chain": "五色（青赤黄白黑）→ 五行运势 → 具体事件征兆",
+      "keywords": ["气色", "五行", "运势", "吉凶"]
+    },
+    "德化相": {
+      "definition": "Virtue transforms physiognomy - 长期德行修养可逆转面相，改变命运轨迹",
+      "logic_chain": "心性修炼 → 神气转化 → 面相优化 → 命运改善",
+      "keywords": ["德行", "修养", "相由心生", "命运改变"]
+    }
+  },
+
+  "三庭系统": {
+    "上庭": {
+      "位置": "发际线至眉毛",
+      "年龄段": "15-30岁",
+      "主运": ["少年运", "学业", "贵人", "祖荫"],
+      "理想形态": "宽阔饱满、光润无纹",
+      "凶相": "狭窄凹陷、横纹破损",
+      "典籍": "《麻衣神相·三庭论》",
+      "features": [
+        {
+          "id": "ST001",
+          "name": "天庭饱满",
+          "element": "阳气充盈",
+          "character": ["智慧早开", "贵人运强"],
+          "fate": ["少年得志", "祖荫深厚", "官运亨通"],
+          "text": "《麻衣神相·天中论》天庭饱满，少年登科",
+          "english": "Full forehead indicates early success and ancestral blessings"
+        },
+        {
+          "id": "ST002",
+          "name": "天庭狭窄",
+          "element": "阳气不足",
+          "character": ["思维受限", "贵人缘薄"],
+          "fate": ["少年坎坷", "学业艰难", "需自立更生"],
+          "text": "《神相全编》额窄者，祖业难守",
+          "english": "Narrow forehead suggests difficult youth"
+        },
+        {
+          "id": "ST003",
+          "name": "印堂开阔",
+          "position": "两眉之间（命宫）",
+          "element": "心气舒畅",
+          "character": ["心胸开阔", "包容力强"],
+          "fate": ["28-30岁转运", "心想事成"],
+          "text": "《太清神鉴·印堂法》",
+          "english": "Wide glabella indicates open-mindedness and fortune at 28-30"
+        },
+        {
+          "id": "ST004",
+          "name": "印堂狭窄",
+          "position": "命宫（眉间<2指宽）",
+          "element": "心气郁结",
+          "character": ["心胸狭隘", "易钻牛角尖"],
+          "fate": ["中年运阻", "小人是非多"],
+          "text": "《柳庄相法》印堂窄者，一生多虑",
+          "english": "Narrow glabella suggests anxiety"
+        },
+        {
+          "id": "ST005",
+          "name": "额有横纹",
+          "element": "忧思过度（土克水）",
+          "character": ["操劳命", "责任心重"],
+          "fate": "若纹深且乱→劳碌无功；若纹少而清→有福之纹",
+          "text": "《神相全编·额纹论》三纹齐整为王字纹，主贵",
+          "english": "Forehead lines: orderly=nobility, chaotic=toil"
+        },
+        {
+          "id": "ST006",
+          "name": "日月角突出",
+          "position": "上庭两侧（额头左右高骨）",
+          "element": "父母宫饱满",
+          "character": ["父母健康", "家庭和睦"],
+          "fate": ["得父母庇护", "早年家运兴旺"],
+          "text": "《麻衣神相·父母宫》",
+          "english": "Prominent sun-moon angles indicate parental health"
+        },
+        {
+          "id": "ST007",
+          "name": "额头光润",
+          "element": "气血充盈",
+          "character": ["精神饱满", "正能量强"],
+          "fate": ["当下运势佳", "贵人自来"],
+          "text": "《太清神鉴·望气法》额润如玉，必有喜事",
+          "english": "Lustrous forehead signals current good fortune"
+        },
+        {
+          "id": "ST008",
+          "name": "额有破损疤痕",
+          "element": "气场受损",
+          "character": "少年遭变故",
+          "fate": "15-30岁间有灾劫或家庭变故",
+          "text": "《神相全编》额破者，少年坎坷",
+          "english": "Forehead scars indicate early-life adversity"
+        },
+        {
+          "id": "ST009",
+          "name": "发际线整齐",
+          "element": "肾气充足（发为肾之华）",
+          "character": ["精力旺盛", "行动有序"],
+          "fate": ["事业起步稳健", "规划能力强"],
+          "text": "《黄帝内经·灵枢》发际齐者，肾气足",
+          "english": "Even hairline indicates vitality"
+        },
+        {
+          "id": "ST010",
+          "name": "边城饱满",
+          "position": "额头两侧（靠近太阳穴）",
+          "element": "迁移宫有力",
+          "character": ["适应力强", "善于变动"],
+          "fate": ["外出发展运佳", "海外运强"],
+          "text": "《麻衣神相·迁移宫》",
+          "english": "Full temples indicate success abroad"
+        }
+      ]
+    },
+
+    "中庭": {
+      "位置": "眉毛至鼻准",
+      "年龄段": "31-50岁",
+      "主运": ["中年运", "事业", "财富", "权力"],
+      "理想形态": "方正匀称、鼻梁挺直",
+      "凶相": "塌陷歪斜、过长过短",
+      "典籍": "《柳庄相法·中庭司事业》",
+      "features": [
+        {
+          "id": "MT001",
+          "name": "中庭方正",
+          "element": "土德完满",
+          "character": ["务实稳重", "中正平和"],
+          "fate": ["中年事业稳定", "财官双美"],
+          "text": "《麻衣神相·中庭论》中庭方正者，三十至五十年富贵",
+          "english": "Square mid-face indicates stable career in middle age"
+        },
+        {
+          "id": "MT002",
+          "name": "颧骨高耸",
+          "position": "中庭两侧（权力宫）",
+          "element": "金骨显露",
+          "character": ["掌权欲强", "领导力佳"],
+          "fate": ["中年掌权", "得威望地位"],
+          "text": "《麻衣神相·颧骨论》颧高者，权柄在握",
+          "english": "High cheekbones indicate leadership"
+        },
+        {
+          "id": "MT003",
+          "name": "颧骨无肉",
+          "element": "权力有形无实",
+          "character": ["刚硬寡恩", "易树敌"],
+          "fate": ["有权但孤立", "晚年易失势"],
+          "text": "《柳庄相法》颧露无肉，孤权不终",
+          "english": "Bony cheekbones suggest lonely power"
+        },
+        {
+          "id": "MT004",
+          "name": "鼻梁挺直",
+          "position": "山根至鼻准",
+          "element": "土德充实",
+          "character": ["意志坚定", "实干能力强"],
+          "fate": ["事业顺遂", "财运中正", "官运佳"],
+          "text": "《麻衣神相·鼻为土形》《柳庄相法·鼻为官禄主》",
+          "english": "Straight nose ridge indicates career success"
+        },
+        {
+          "id": "MT005",
+          "name": "鼻梁断折",
+          "position": "山根塌陷",
+          "element": "中年运破",
+          "character": "中年易遇人生转折",
+          "fate": "41岁前后有大变故（婚姻、事业、健康）",
+          "text": "《太清神鉴·山根论》山根折断，中年有灾",
+          "english": "Broken nose bridge warns of mid-life crisis around 41"
+        },
+        {
+          "id": "MT006",
+          "name": "鼻头丰隆",
+          "position": "鼻准（鼻尖）",
+          "element": "财帛宫饱满",
+          "character": ["聚财能力强", "物质安全感高"],
+          "fate": ["财运亨通", "晚年富足"],
+          "text": "《神相全编·准头论》准头圆润，财库丰盈",
+          "english": "Round nose tip indicates wealth accumulation"
+        },
+        {
+          "id": "MT007",
+          "name": "鼻头尖削",
+          "element": "财气不聚",
+          "character": "精打细算但难守财",
+          "fate": ["赚得快散得快", "晚年需防贫困"],
+          "text": "《柳庄相法》鼻尖无肉，钱财难守",
+          "english": "Sharp nose tip suggests difficulty retaining wealth"
+        },
+        {
+          "id": "MT008",
+          "name": "鼻孔外露",
+          "position": "鼻翼（仰鼻）",
+          "element": "财库外泄",
+          "character": ["消费无度", "不善理财"],
+          "fate": ["漏财相", "中年防破败"],
+          "text": "《麻衣神相》仰鼻露孔，家财难守",
+          "english": "Upturned nose indicates money leakage"
+        },
+        {
+          "id": "MT009",
+          "name": "印堂发黑",
+          "position": "命宫（28-30岁运位）",
+          "element": "气运受阻",
+          "character": ["压力极大", "心神不宁"],
+          "fate": ["近期凶运", "需防灾祸"],
+          "text": "《太清神鉴·印堂气色》印堂发黑，百日内有祸",
+          "english": "Blackish glabella warns of disaster within 100 days"
+        },
+        {
+          "id": "MT010",
+          "name": "眼袋深重",
+          "position": "中庭下部（男女宫）",
+          "element": "肾虚或操劳过度",
+          "fate": "子女缘薄或子女操心事多",
+          "text": "《神相全编·子女宫》泪堂深陷，子息艰难",
+          "english": "Deep eye bags suggest challenges with children"
+        }
+      ]
+    },
+
+    "下庭": {
+      "位置": "鼻准至下巴",
+      "年龄段": "51岁以后",
+      "主运": ["晚年运", "福禄", "子孙", "归宿"],
+      "理想形态": "圆厚有肉、地阁方圆",
+      "凶相": "尖削无肉、兜转无力",
+      "典籍": "《神相全编·下庭主晚福》",
+      "features": [
+        {
+          "id": "LT001",
+          "name": "地阁方圆",
+          "position": "下巴（承浆至下颏）",
+          "element": "肾水充足",
+          "character": ["福德深厚", "包容力强"],
+          "fate": ["晚年安康", "子孙满堂", "田宅丰盈"],
+          "text": "《麻衣神相·地阁论》地阁方圆，晚福绵长",
+          "english": "Square-round chin indicates blessed old age"
+        },
+        {
+          "id": "LT002",
+          "name": "下巴尖削",
+          "element": "晚运不稳",
+          "character": ["晚年孤独", "缺乏安全感"],
+          "fate": ["晚景凄凉", "需早做储备"],
+          "text": "《柳庄相法》地阁尖削，老来无依",
+          "english": "Pointed chin suggests lonely old age"
+        },
+        {
+          "id": "LT003",
+          "name": "人中深长",
+          "position": "鼻下至上唇（寿命宫）",
+          "element": "先天精气足",
+          "character": ["生育能力强", "寿命长"],
+          "fate": ["子女多", "健康长寿"],
+          "text": "《麻衣神相·人中论》人中深长，寿过八旬",
+          "english": "Deep philtrum indicates longevity and fertility"
+        },
+        {
+          "id": "LT004",
+          "name": "法令纹深长",
+          "position": "鼻翼至嘴角（寿带）",
+          "element": "权威象征",
+          "character": ["权威感强", "说话有分量"],
+          "fate": ["事业有成", "晚年有权威地位"],
+          "text": "《柳庄相法·法令论》法令入口，权贵至老",
+          "english": "Deep nasolabial folds indicate authority"
+        },
+        {
+          "id": "LT005",
+          "name": "嘴角上扬",
+          "position": "口角（笑肌位置）",
+          "element": "心境愉悦",
+          "character": ["乐观开朗", "人缘好"],
+          "fate": ["福禄自来", "晚年幸福"],
+          "text": "《麻衣神相·口法》口角上扬，福禄双全",
+          "english": "Upturned mouth corners indicate happiness"
+        },
+        {
+          "id": "LT006",
+          "name": "嘴角下垂",
+          "element": "心气郁结",
+          "character": ["悲观消极", "易抱怨"],
+          "fate": ["晚运不佳", "人际关系差"],
+          "text": "《柳庄相法》口角下垂，晚景凄凉",
+          "english": "Downturned mouth indicates pessimism"
+        },
+        {
+          "id": "LT007",
+          "name": "腮骨外张",
+          "position": "下庭两侧（奴仆宫）",
+          "element": "逆骨（权力欲）",
+          "character": ["反叛性强", "不服管教"],
+          "fate": "下属运差或自己易背叛上级",
+          "text": "《神相全编·反骨论》腮骨横张，反骨之相",
+          "english": "Protruding jawbones indicate rebellious nature"
+        }
+      ]
+    }
+  },
+
+  "五官系统": {
+    "耳": {
+      "五行": "水",
+      "脏腑": "肾",
+      "映射": ["智慧", "根基", "先天禀赋"],
+      "命运领域": ["长寿", "祖业", "学习能力"],
+      "吉相": "轮廓分明、贴脑垂珠",
+      "凶相": "轮飞廓反、焦黑无肉",
+      "features": [
+        {
+          "id": "ER001",
+          "name": "耳大垂肩",
+          "element": "肾水充盈",
+          "character": ["福德深厚", "智慧根基好"],
+          "fate": ["长寿", "富贵", "有宗教缘"],
+          "text": "《麻衣神相·耳法》耳大垂肩，佛相福相",
+          "english": "Large ears reaching shoulders indicate wisdom and longevity"
+        },
+        {
+          "id": "ER002",
+          "name": "耳轮分明",
+          "element": "结构完整",
+          "character": ["条理清晰", "自律性强"],
+          "fate": ["学业顺", "事业有序"],
+          "text": "《柳庄相法》轮廓分明，智慧过人",
+          "english": "Clear ear contours indicate orderly mind"
+        },
+        {
+          "id": "ER003",
+          "name": "耳朵贴脑",
+          "element": "肾气收敛",
+          "character": ["谨慎保守", "善守秘密"],
+          "fate": ["少年安稳", "不易惹祸"],
+          "text": "《神相全编·耳贴脑》耳贴脑后,富贵到老",
+          "english": "Ears close to head indicate prudence"
+        },
+        {
+          "id": "ER004",
+          "name": "招风耳",
+          "element": "肾气外散",
+          "character": ["好奇心强", "易受外界影响"],
+          "fate": ["少年多动荡", "易听信他人"],
+          "text": "《太清神鉴》耳反如兜，家财难守",
+          "english": "Protruding ears suggest restlessness"
+        },
+        {
+          "id": "ER005",
+          "name": "耳有垂珠",
+          "position": "耳垂（地轮）",
+          "element": "福德宫饱满",
+          "character": ["慈悲心重", "福气深"],
+          "fate": ["晚年福禄", "子孙贤孝"],
+          "text": "《麻衣神相》垂珠朝口，晚年大富",
+          "english": "Thick earlobes indicate late-life prosperity"
+        }
+      ]
+    },
+
+    "眉": {
+      "五行": "木",
+      "脏腑": "肝",
+      "映射": ["情感", "兄弟", "胆识"],
+      "命运领域": ["手足关系", "魄力"],
+      "吉相": "清秀顺长、有棱有势",
+      "凶相": "散乱压眼、断眉逆生",
+      "features": [
+        {
+          "id": "MB001",
+          "name": "眉清目秀",
+          "element": "木气条达",
+          "character": ["理性", "文雅", "有涵养"],
+          "fate": ["兄弟和睦", "贵人运强"],
+          "text": "《麻衣神相·眉法》眉清目秀，必主聪明",
+          "english": "Clear brows indicate intelligence"
+        },
+        {
+          "id": "MB002",
+          "name": "眉长过目",
+          "element": "肝木有余",
+          "character": ["重情重义", "兄弟缘深"],
+          "fate": ["手足情深", "得兄弟助力"],
+          "text": "《柳庄相法·兄弟宫》眉长过目，兄弟五六",
+          "english": "Brows extending past eyes indicate strong sibling bonds"
+        },
+        {
+          "id": "MB003",
+          "name": "眉浓密粗重",
+          "element": "肝火旺盛",
+          "character": ["性格刚烈", "易冲动"],
+          "fate": "意志坚定但需防暴躁误事",
+          "text": "《神相全编》浓眉者，性刚胆大",
+          "english": "Thick brows indicate strong will but impulsiveness"
+        },
+        {
+          "id": "MB004",
+          "name": "眉有断裂",
+          "element": "兄弟宫破损",
+          "character": ["感情易中断", "缺乏持续性"],
+          "fate": "兄弟姐妹有损伤或关系破裂",
+          "text": "《柳庄相法》眉断者，兄弟有损",
+          "english": "Broken brows indicate sibling loss"
+        },
+        {
+          "id": "MB005",
+          "name": "眉间距宽（开印）",
+          "position": "两眉距离>2指",
+          "element": "心胸开阔",
+          "character": ["大度包容", "不记仇"],
+          "fate": ["命宫开阔", "运势顺畅"],
+          "text": "《麻衣神相·印堂》两眉宽广，心胸宽广",
+          "english": "Wide space between brows indicates tolerance"
+        }
+      ]
+    },
+
+    "眼": {
+      "五行": "火",
+      "脏腑": "心",
+      "映射": ["神志", "权谋", "意志"],
+      "命运领域": ["权力", "智慧", "人际"],
+      "吉相": "黑白分明、炯炯有神",
+      "凶相": "三白四白、斜视浑浊",
+      "features": [
+        {
+          "id": "EY001",
+          "name": "眼大有神",
+          "element": "心火明亮",
+          "character": ["感情丰富", "表达力强"],
+          "fate": ["人际关系好", "异性缘佳"],
+          "text": "《麻衣神相·眼法》眼大有神，聪慧过人",
+          "english": "Large bright eyes indicate emotional richness"
+        },
+        {
+          "id": "EY002",
+          "name": "眼小藏神",
+          "element": "心神内敛",
+          "character": ["深沉稳重", "富谋略"],
+          "fate": ["大器晚成", "权谋高手"],
+          "text": "《柳庄相法》眼小藏神，富贵之相",
+          "english": "Small eyes with spirit indicate strategic mind"
+        },
+        {
+          "id": "EY003",
+          "name": "黑白分明",
+          "element": "心神清明",
+          "character": ["正直清廉", "判断力强"],
+          "fate": ["官运亨通", "清誉在身"],
+          "text": "《神相全编·眼神论》黑白分明，必主清贵",
+          "english": "Clear contrast in eyes indicates integrity"
+        },
+        {
+          "id": "EY004",
+          "name": "三白眼",
+          "position": "眼珠偏上，三面露白",
+          "element": "心火偏激",
+          "character": ["刚烈狠辣", "易走极端"],
+          "fate": ["性格缺陷易招祸", "中年需防大灾"],
+          "text": "《太清神鉴·三白四白论》三白眼者，刑克重重",
+          "english": "Sanpaku eyes indicate extremism and danger"
+        },
+        {
+          "id": "EY005",
+          "name": "眼角上扬（丹凤眼）",
+          "element": "权势之相",
+          "character": ["聪慧机敏", "有领导力"],
+          "fate": ["权力运佳", "易居高位"],
+          "text": "《神相全编·丹凤眼》凤眼朝天，必掌权柄",
+          "english": "Phoenix eyes indicate leadership"
+        },
+        {
+          "id": "EY006",
+          "name": "眼下卧蚕",
+          "position": "眼下方微隆（男女宫）",
+          "element": "子息宫饱满",
+          "character": ["生育力强", "子女缘深"],
+          "fate": ["子女多且孝顺", "家庭和睦"],
+          "text": "《麻衣神相·子女宫》卧蚕丰满，子孙满堂",
+          "english": "Under-eye fullness indicates many children"
+        }
+      ]
+    },
+
+    "鼻": {
+      "五行": "土",
+      "脏腑": "脾",
+      "映射": ["信用", "决断", "财富"],
+      "命运领域": ["财运", "事业", "官运"],
+      "吉相": "梁直准圆、色黄明润",
+      "凶相": "塌扁歪曲、露孔仰鼻",
+      "features": [
+        {
+          "id": "NS001",
+          "name": "鼻梁挺直",
+          "element": "土德充实",
+          "character": ["意志坚定", "实干能力强"],
+          "fate": ["事业顺遂", "财运中正", "官运佳"],
+          "text": "《麻衣神相·鼻为土形》",
+          "english": "Straight nose ridge indicates career success"
+        },
+        {
+          "id": "NS002",
+          "name": "鼻头丰隆",
+          "position": "鼻准",
+          "element": "财帛宫饱满",
+          "character": ["聚财能力强", "物质安全感高"],
+          "fate": ["财运亨通", "晚年富足"],
+          "text": "《神相全编·准头论》准头圆润，财库丰盈",
+          "english": "Round nose tip indicates wealth"
+        },
+        {
+          "id": "NS003",
+          "name": "鼻翼饱满",
+          "position": "鼻两侧（金甲、兰台）",
+          "element": "财源广进",
+          "character": ["赚钱门路多", "善聚财"],
+          "fate": ["偏财运佳", "投资获利"],
+          "text": "《神相全编·金甲兰台》鼻翼丰厚，财源滚滚",
+          "english": "Full nose wings indicate multiple income sources"
+        },
+        {
+          "id": "NS004",
+          "name": "山根有横纹",
+          "position": "鼻根部（疾厄宫）",
+          "element": "健康警讯",
+          "character": "体质弱或慢性病",
+          "fate": "41岁前后注意健康、防大病",
+          "text": "《太清神鉴·疾厄论》山根纹者，主疾病",
+          "english": "Lines on nose bridge indicate health concerns around 41"
+        },
+        {
+          "id": "NS005",
+          "name": "鼻梁有节",
+          "element": "土相受克",
+          "character": ["性格倔强", "不服输"],
+          "fate": "中年有坎坷但能克服",
+          "text": "《柳庄相法·鼻节论》鼻有节者，四十前后防破财",
+          "english": "Bumpy nose bridge indicates mid-life obstacles"
+        }
+      ]
+    },
+
+    "口": {
+      "五行": "金",
+      "脏腑": "肺",
+      "映射": ["言信", "食禄", "晚福"],
+      "命运领域": ["口才", "福禄", "子女"],
+      "吉相": "方正棱角、唇红齿白",
+      "凶相": "歪斜兜转、唇掀齿露",
+      "features": [
+        {
+          "id": "MO001",
+          "name": "口方正大",
+          "element": "金相完满",
+          "character": ["言而有信", "有领导力"],
+          "fate": ["食禄丰厚", "官运亨通"],
+          "text": "《麻衣神相·口法》口方四字，位至三公",
+          "english": "Square mouth indicates high position"
+        },
+        {
+          "id": "MO002",
+          "name": "唇红齿白",
+          "element": "气血充盈",
+          "character": ["健康", "有魅力"],
+          "fate": ["贵人运强", "异性缘佳"],
+          "text": "《神相全编·唇齿论》唇红齿白，必主富贵",
+          "english": "Red lips white teeth indicate health and charm"
+        },
+        {
+          "id": "MO003",
+          "name": "唇薄无肉",
+          "element": "福禄不足",
+          "character": ["言语尖刻", "薄情"],
+          "fate": ["晚年孤独", "子女缘薄"],
+          "text": "《太清神鉴》唇薄者，晚景凄凉",
+          "english": "Thin lips suggest loneliness in old age"
+        },
+        {
+          "id": "MO004",
+          "name": "牙齿整齐",
+          "element": "骨相良好",
+          "character": ["性格端正", "有条理"],
+          "fate": ["家世好", "事业顺"],
+          "text": "《麻衣神相·齿法》齿白齐整，必主贵显",
+          "english": "Even teeth indicate good family background"
+        },
+        {
+          "id": "MO005",
+          "name": "牙齿稀疏",
+          "element": "肾气不足",
+          "character": ["言语不慎", "守不住秘密"],
+          "fate": ["破财漏财", "六亲缘薄"],
+          "text": "《柳庄相法》齿疏漏风，破财不聚",
+          "english": "Gapped teeth indicate financial leakage"
+        }
+      ]
+    }
+  },
+
+  "十二宫系统": {
+    "命宫": {
+      "position": "两眉正中间（印堂）",
+      "represents": ["28-30岁运势", "整体气运", "愿望实现"],
+      "signs": {
+        "吉": "开阔明润 → 心想事成、运势顺畅",
+        "凶": "狭窄晦暗 → 心结难开、诸事不顺",
+        "瑕": "有痣或纹 → 一生多坎坷"
+      },
+      "source": "《麻衣神相·十二宫论》《太清神鉴·印堂法》",
+      "english": "Destiny Palace: 28-30 age fortune, wish fulfillment"
+    },
+    "财帛宫": {
+      "position": "鼻头部位（鼻准）",
+      "represents": ["财富累积能力", "物质安全感"],
+      "signs": {
+        "吉": "圆润丰隆 → 财运亨通、善于聚财",
+        "凶": "尖削露孔 → 赚得快散得快",
+        "气色": "色黄明润 → 近期有财"
+      },
+      "source": "《神相全编·准头论》《柳庄相法·财帛宫》",
+      "english": "Wealth Palace: financial accumulation ability"
+    },
+    "兄弟宫": {
+      "position": "两眉整体",
+      "represents": ["手足关系", "朋友缘分", "团队协作"],
+      "signs": {
+        "吉": "清秀顺长 → 兄弟和睦、贵人多",
+        "凶": "杂乱断裂 → 兄弟不和或损伤",
+        "强": "浓密有力 → 兄弟情深、互相扶持"
+      },
+      "source": "《麻衣神相·兄弟宫》",
+      "english": "Siblings Palace: relationship with brothers and friends"
+    },
+    "田宅宫": {
+      "position": "上眼睑区域",
+      "represents": ["不动产", "居住环境", "家族产业"],
+      "signs": {
+        "吉": "饱满宽阔 → 房产丰厚、家业兴旺",
+        "凶": "凹陷窄小 → 置业困难、居无定所",
+        "气色": "色泽明润 → 近期房产运佳"
+      },
+      "source": "《神相全编·田宅宫》",
+      "english": "Property Palace: real estate and family assets"
+    },
+    "男女宫": {
+      "position": "眼睛正下方（泪堂、卧蚕位置）",
+      "represents": ["子女情况", "生育能力", "后代发展"],
+      "signs": {
+        "吉": "卧蚕丰满 → 子女多且孝顺",
+        "凶": "干瘪凹陷 → 子女缘薄或操心多",
+        "气色": "色泽暗滞 → 子女健康或学业问题"
+      },
+      "source": "《柳庄相法·子女宫》《麻衣神相》",
+      "english": "Children Palace: offspring fortune and fertility"
+    },
+    "奴仆宫": {
+      "position": "地阁两旁至腮骨",
+      "represents": ["下属运", "管理能力", "晚辈关系"],
+      "signs": {
+        "吉": "圆厚有肉 → 得下属拥护、管理有方",
+        "凶": "尖削无肉 → 下属不服、孤立无援",
+        "特殊": "腮骨外张 → 反骨，易背叛或被背叛"
+      },
+      "source": "《神相全编·奴仆宫》",
+      "english": "Servants Palace: subordinate relationships"
+    },
+    "妻妾宫": {
+      "position": "眼角外侧（鱼尾部位）",
+      "represents": ["婚姻状况", "配偶关系", "感情稳定性"],
+      "signs": {
+        "吉": "平满光润 → 婚姻美满、夫妻和谐",
+        "凶": "纹路杂乱 → 婚姻波折、多次婚姻",
+        "气色": "色泽晦暗 → 当前感情有问题"
+      },
+      "source": "《麻衣神相·夫妻宫》《太清神鉴》",
+      "english": "Spouse Palace: marriage quality and stability"
+    },
+    "疾厄宫": {
+      "position": "鼻梁根部（山根，两眼之间）",
+      "represents": ["健康状况", "疾病征兆", "寿命长短"],
+      "signs": {
+        "吉": "高隆饱满 → 体质好、少病痛",
+        "凶": "低陷断折 → 41岁前后防大病",
+        "瑕": "有横纹 → 慢性病或手术痕迹"
+      },
+      "source": "《太清神鉴·疾厄论》《神相全编》",
+      "english": "Health Palace: disease indicators and longevity"
+    },
+    "迁移宫": {
+      "position": "额头两侧靠近发际（边城部位）",
+      "represents": ["出行运", "变动运", "外出发展", "移民运"],
+      "signs": {
+        "吉": "饱满有势 → 出外遇贵人、适合外地发展",
+        "凶": "凹陷无肉 → 不宜远行、守本地为佳",
+        "气色": "色泽明亮 → 近期有远行或变动机会"
+      },
+      "source": "《麻衣神相·迁移宫》",
+      "english": "Travel Palace: fortune in relocation and travel"
+    },
+    "官禄宫": {
+      "position": "前额中央高处（天中至司空）",
+      "represents": ["事业成就", "社会地位", "官运功名"],
+      "signs": {
+        "吉": "隆起光润 → 事业有成、官运亨通",
+        "凶": "平陷晦暗 → 事业平庸、难有大成",
+        "特殊": "有骨峰起 → 权力欲强、适合仕途"
+      },
+      "source": "《柳庄相法·官禄宫》《神相全编》",
+      "english": "Career Palace: professional achievement and social status"
+    },
+    "福德宫": {
+      "position": "眉毛上方至额头之间",
+      "represents": ["福气深浅", "修养层次", "精神境界"],
+      "signs": {
+        "吉": "饱满明润 → 福德深厚、心境平和",
+        "凶": "凹陷无肉 → 福薄劳碌、精神压力大",
+        "气色": "色泽清明 → 修养好、有宗教缘"
+      },
+      "source": "《神相全编·福德宫》",
+      "english": "Fortune Palace: spiritual cultivation and blessings"
+    },
+    "父母宫": {
+      "position": "额头两侧高骨（日月角，左父右母）",
+      "represents": ["父母健康", "家庭关系", "早年环境"],
+      "signs": {
+        "吉": "高耸饱满 → 父母长寿、家庭和睦",
+        "凶": "低陷破损 → 父母早逝或关系疏离",
+        "特殊": "左右不对称 → 父母一方有恙"
+      },
+      "source": "《柳庄相法·父母宫》",
+      "english": "Parents Palace: parental health and family harmony"
+    }
+  },
+
+  "气色诊断系统": {
+    "五色对应": {
+      "黄色": {
+        "五行": "土",
+        "脏腑": "脾",
+        "吉象": "黄润如蒸栗 → 财喜临门、贵人相助",
+        "凶象": "黄暗枯燥 → 脾胃虚弱、财运停滞",
+        "时效": "百日内",
+        "text": "《太清神鉴·五色诊》黄润如蒸栗，财喜临门",
+        "english": "Steamed-chestnut yellow indicates incoming wealth"
+      },
+      "红色": {
+        "五行": "火",
+        "脏腑": "心",
+        "吉象": "明赤红润 → 喜事将临（升职、婚嫁、添丁）",
+        "凶象": "暗赤发紫 → 口舌之争、血光之灾",
+        "区分": "明赤主喜，暗赤主争",
+        "text": "《柳庄相法·气色篇》额赤有二：明赤主喜，暗赤主争",
+        "english": "Bright red=joy, dark red=conflict"
+      },
+      "青黑色": {
+        "五行": "水（肾）木（肝）",
+        "脏腑": "肾、肝",
+        "凶象": "青黑如墨 → 大祸将至、官非、丧事",
+        "时效": "百日内防灾祸",
+        "text": "《太清神鉴》面如锅底灰，大祸将至",
+        "english": "Ink-black face warns of disaster within 100 days"
+      },
+      "白色": {
+        "五行": "金",
+        "脏腑": "肺",
+        "吉象": "白润如玉 → 贵气、健康",
+        "凶象": "惨白如纸 → 失血、大病、惊吓",
+        "text": "《太清神鉴》面白如纸，血气大亏",
+        "english": "Pale white face indicates blood loss or shock"
+      }
+    },
+
+    "部位气色": {
+      "印堂": [
+        {
+          "color": "红润",
+          "meaning": "喜事将临（升职、婚嫁、添丁）",
+          "timeframe": "近期",
+          "text": "《柳庄相法》印堂红润，喜事将临"
+        },
+        {
+          "color": "发黑",
+          "meaning": "百日内有灾厄、官司、疾病",
+          "timeframe": "百日内",
+          "text": "《太清神鉴》印堂黑气，百日内有祸"
+        }
+      ],
+      "鼻头": [
+        {
+          "color": "明赤",
+          "meaning": "有财进",
+          "timeframe": "近期"
+        },
+        {
+          "color": "暗赤",
+          "meaning": "破财或酒色伤身",
+          "timeframe": "近期"
+        },
+        {
+          "color": "黄润",
+          "meaning": "财运佳",
+          "timeframe": "当年"
+        }
+      ],
+      "两颧": [
+        {
+          "color": "发黑",
+          "meaning": "权柄将失、事业受阻",
+          "text": "《柳庄相法》颧黑者，权柄将失"
+        }
+      ],
+      "眼下": [
+        {
+          "color": "青黑",
+          "meaning": "子女有灾或自身肾气不足",
+          "text": "《太清神鉴》泪堂青黑，子息有忧"
+        }
+      ],
+      "额头": [
+        {
+          "color": "发亮如镜（明润）",
+          "meaning": "有贵人",
+          "type": "吉"
+        },
+        {
+          "color": "油光",
+          "meaning": "乐极生悲",
+          "type": "凶",
+          "text": "《柳庄相法》额如明镜主贵，油光主败"
+        },
+        {
+          "color": "发暗",
+          "meaning": "仕途受阻、升职无望",
+          "text": "《神相全编》天中暗滞，仕途受阻"
+        }
+      ]
+    },
+
+    "时效规律": {
+      "短期": "气色变化 → 30-100天内应验",
+      "中期": "肉相变化 → 3年内应验",
+      "长期": "骨相变化 → 10年以上"
+    }
+  },
+
+  "流年部位映射": {
+    "1-7岁": {
+      "position": "左耳七部位",
+      "represents": "幼年体质与家庭环境",
+      "element": "先天之本",
+      "signs": "耳相好→幼年平安；耳有缺损→幼年多病",
+      "source": "《麻衣神相·流年图》"
+    },
+    "8-14岁": {
+      "position": "右耳七部位",
+      "represents": "学业启蒙、性格养成",
+      "element": "童年运势",
+      "signs": "右耳相佳→童年学业顺利"
+    },
+    "15-30岁": {
+      "position": "额头（上庭各部位）",
+      "represents": "学业、初入社会、建立基础",
+      "element": "少年青年运",
+      "signs": "额相好→少年顺遂、贵人多",
+      "source": "《麻衣神相·额头流年》"
+    },
+    "31-50岁": {
+      "position": "中停（眉眼鼻颧）",
+      "represents": "事业巅峰、财富累积",
+      "element": "中年事业运",
+      "signs": "中停相佳→中年富贵",
+      "source": "《柳庄相法·中停流年》"
+    },
+    "51岁以后": {
+      "position": "下停（人中、口、下巴）",
+      "represents": "享福、子孙、归宿",
+      "element": "晚年福禄运",
+      "signs": "下停相佳→晚年安康",
+      "source": "《神相全编·下停流年》"
+    },
+    "关键年龄": {
+      "41岁": {
+        "position": "山根（鼻根部）",
+        "meaning": "人生重大转折点",
+        "warning": "山根断裂→41岁前后有大变故",
+        "source": "《太清神鉴·山根41岁论》"
+      },
+      "48岁": {
+        "position": "鼻准（鼻头）",
+        "meaning": "财运巅峰",
+        "signs": "准头好→48岁财运最旺",
+        "source": "《麻衣神相·准头48岁》"
+      },
+      "60岁": {
+        "position": "水星（嘴）",
+        "meaning": "退休后生活",
+        "signs": "口相好→60岁后衣食无忧"
+      },
+      "71岁": {
+        "position": "地阁（下巴）",
+        "meaning": "晚年安享",
+        "signs": "地阁饱满→71岁后子孙满堂"
+      }
+    }
+  },
+
+  "特殊相法": {
+    "格局相": [
+      {
+        "id": "SP001",
+        "name": "三停均等",
+        "definition": "上中下三庭等长",
+        "element": "天地人三才平衡",
+        "character": "一生平稳、各阶段均衡发展",
+        "fate": "少年中年晚年各有所成，福禄全",
+        "text": "《麻衣神相·三停论》三停平等，富贵双全",
+        "english": "Equal three divisions indicate balanced lifelong fortune"
+      },
+      {
+        "id": "SP002",
+        "name": "五岳朝拱",
+        "definition": "额、颧、鼻、颏四方高耸，鼻居中",
+        "element": "土德完满、群峰拱主",
+        "character": "领导力强、众望所归",
+        "fate": "帝王将相之格、权贵之相",
+        "text": "《太清神鉴·五岳论》五岳朝拱，位极人臣",
+        "english": "Five peaks converging indicates supreme authority"
+      },
+      {
+        "id": "SP003",
+        "name": "四渎深长",
+        "definition": "耳、目、口、鼻四通道深邃",
+        "element": "精气神充盈",
+        "character": "智慧深厚、福禄绵长",
+        "fate": "富贵寿考、子孙昌盛",
+        "text": "《麻衣神相·四渎论》四渎通畅，福禄绵延",
+        "english": "Four rivers deep indicate longevity"
+      }
+    ],
+
+    "骨肉配合": [
+      {
+        "id": "BM001",
+        "name": "骨起肉附",
+        "definition": "全脸骨肉配合",
+        "element": "刚柔并济",
+        "character": "有原则又有人情味",
+        "fate": "事业成功且人缘好",
+        "text": "《柳庄相法·骨肉论》骨显肉附，刚柔得宜",
+        "english": "Bone with flesh indicates balanced character"
+      },
+      {
+        "id": "BM002",
+        "name": "骨露无肉",
+        "definition": "骨骼突出、瘦削无肉",
+        "element": "刚而无柔",
+        "character": "刻薄寡恩、孤克",
+        "fate": "虽有才能但人缘差、晚年孤苦",
+        "text": "《神相全编》骨露筋现，刑克六亲",
+        "english": "Exposed bones indicate isolation"
+      },
+      {
+        "id": "BM003",
+        "name": "肉多骨弱",
+        "definition": "面肉臃肿、骨架不显",
+        "element": "柔而无刚",
+        "character": "软弱无主见、易被支配",
+        "fate": "虽享福禄但无大成就",
+        "text": "《柳庄相法》肉多骨少，富而不贵",
+        "english": "Excessive flesh indicates wealth without status"
+      }
+    ],
+
+    "形态特征": [
+      {
+        "id": "SH001",
+        "name": "面如满月",
+        "element": "福德圆满",
+        "character": "心地善良、平和包容",
+        "fate": "晚年福禄、家庭和睦",
+        "text": "《麻衣神相·形格论》面如满月，福寿康宁",
+        "english": "Full moon face indicates peace and longevity"
+      },
+      {
+        "id": "SH002",
+        "name": "面如刀削",
+        "element": "金相过重",
+        "character": "果断决绝、手腕强硬",
+        "fate": "事业有成但六亲缘薄",
+        "text": "《神相全编》面如斧削，权重亲疏",
+        "english": "Chiseled face indicates authority but distant relationships"
+      },
+      {
+        "id": "SH003",
+        "name": "耳高于眉",
+        "element": "智慧超群",
+        "character": "聪慧早慧、学习能力强",
+        "fate": "少年成名、早年得志",
+        "text": "《麻衣神相·耳法》耳高于眉，名扬四海",
+        "english": "Ears higher than brows indicate early fame"
+      },
+      {
+        "id": "SH004",
+        "name": "鼻梁贯顶",
+        "definition": "鼻梁高耸直通额头",
+        "element": "土势强盛",
+        "character": "意志坚强、事业心重",
+        "fate": "大富大贵、事业成就极高",
+        "text": "《太清神鉴》梁贯天庭，位至极品",
+        "english": "Nose bridge reaching forehead indicates supreme achievement"
+      }
+    ]
+  },
+
+  "推理逻辑框架": {
+    "形气神命链": {
+      "step1": {
+        "name": "形态结构（先天禀赋）",
+        "components": ["骨相：先天基因、家族遗传", "肉相：后天养护、生活习惯"]
+      },
+      "step2": {
+        "name": "气色流转（当下状态）",
+        "components": ["五色诊断：对应五行运势", "明暗判断：吉凶征兆"]
+      },
+      "step3": {
+        "name": "神气表现（精神状态）",
+        "components": ["眼神：心神是否清明", "气场：整体能量状态"]
+      },
+      "step4": {
+        "name": "命运走向（综合判断）",
+        "timeframes": {
+          "短期": "气色主导",
+          "中期": "形态+气色",
+          "长期": "骨相+德行"
+        }
+      },
+      "formula": "命运 = f(先天骨相×0.3, 后天形态×0.3, 当下气色×0.2, 德行修养×0.2)"
+    },
+
+    "部位性格际遇链": {
+      "正向推理": [
+        "眼大有神 → 感情丰富 → 人际关系好 → 贵人运强 → 事业顺利",
+        "鼻梁挺直 → 意志坚定 → 实干能力强 → 事业稳定 → 财运亨通",
+        "下巴方圆 → 包容力强 → 家庭和睦 → 晚年福禄 → 子孙昌盛"
+      ],
+      "反向推理": [
+        "孤独晚年 ← 人际差 ← 刻薄寡恩 ← 骨露无肉",
+        "事业坎坷 ← 易冲动 ← 性急暴躁 ← 中庭过短"
+      ]
+    },
+
+    "德化相理论": {
+      "前提": "相由心生并非绝对静态",
+      "正向循环": "善行积累 → 心境平和 → 神气充足 → 面相改善 → 运势提升",
+      "负向循环": "恶行累积 → 心神不宁 → 气色晦暗 → 面相败坏 → 运势下滑",
+      "修行相变规律": {
+        "短期（100天）": "气色改善",
+        "中期（3年）": "肉相变化",
+        "长期（10年）": "骨相优化"
+      },
+      "典籍依据": [
+        "《太上感应篇》积善之家必有余庆",
+        "《道德经》含德之厚，比于赤子"
+      ]
+    }
+  },
+
+  "AI应用映射": {
+    "技术对应": {
+      "三庭比例": {
+        "ai_tech": "面部分割算法",
+        "mapping": "人生各阶段平衡度",
+        "impact": "少年/中年/晚年运",
+        "weight": 0.25
+      },
+      "五眼间距": {
+        "ai_tech": "特征点距离测量",
+        "mapping": "心胸宽窄、格局大小",
+        "impact": "事业发展潜力",
+        "weight": 0.20
+      },
+      "鼻梁高度": {
+        "ai_tech": "3D深度检测",
+        "mapping": "意志强度、自信心",
+        "impact": "财运、事业运",
+        "weight": 0.18
+      },
+      "眼神光度": {
+        "ai_tech": "虹膜反射分析",
+        "mapping": "精神状态、智慧",
+        "impact": "权力运、人际运",
+        "weight": 0.15
+      },
+      "气色色度": {
+        "ai_tech": "HSV色彩分析",
+        "mapping": "当前健康状态",
+        "impact": "短期吉凶",
+        "weight": 0.12
+      },
+      "骨相结构": {
+        "ai_tech": "骨骼关键点检测",
+        "mapping": "先天禀赋",
+        "impact": "长期运势基础",
+        "weight": 0.10
+      }
+    },
+
+    "知识图谱示例": {
+      "face_feature": "鼻梁挺直",
+      "五行属性": "土",
+      "相关脏腑": "脾",
+      "性格特质": {
+        "核心": "实干、稳重、信用",
+        "正面": ["决断力强", "务实", "可靠"],
+        "负面": ["固执", "保守", "缺乏灵活性"]
+      },
+      "命运映射": {
+        "事业": {
+          "倾向": "适合管理、行政、金融",
+          "顺遂度": 0.85,
+          "巅峰期": "35-50岁"
+        },
+        "财富": {
+          "累积能力": 0.90,
+          "财源类型": "正财为主、偏财为辅",
+          "风险": "投机容易失败"
+        },
+        "婚姻": {
+          "稳定性": 0.80,
+          "配偶要求": "重视可靠性",
+          "关键年份": [28, 32, 41]
+        }
+      },
+      "流年部位": {
+        "41岁": "山根",
+        "44岁": "年上",
+        "45岁": "寿上",
+        "48岁": "准头（财运巅峰）"
+      },
+      "气色吉凶": {
+        "黄润": "财运来",
+        "发黑": "健康或事业危机",
+        "发红": "破财或血光"
+      },
+      "优化建议": {
+        "养生": "健脾养胃",
+        "修德": "培养灵活性、开放思维",
+        "趋吉": "把握48岁前后财运高峰"
+      }
+    }
+  },
+
+  "伦理边界": {
+    "积极应用": [
+      "文化遗产数字化：保护传统相术知识体系",
+      "心理学参考：面部特征与性格关联研究",
+      "健康预警：气色诊断辅助医疗（如中医望诊）",
+      "艺术创作：角色设计、人物塑造依据",
+      "历史研究：理解古代识人用人思想"
+    ],
+    "禁止误用": [
+      "❌ 就业歧视（以貌取人）",
+      "❌ 犯罪预测（科学无依据）",
+      "❌ 教育分流（违背平等原则）",
+      "❌ 信贷评估（侵犯隐私权）",
+      "❌ 婚恋欺诈（宿命论误导）"
+    ],
+    "技术实现建议": [
+      "仅作为参考维度之一，不可单一依赖",
+      "必须配合现代心理学、医学交叉验证",
+      "明确标注为文化研究工具而非科学预测",
+      "用户知情同意+隐私保护机制"
+    ]
+  },
+
+  "RAG检索索引": {
+    "按部位检索": ["上庭", "中庭", "下庭", "耳", "眉", "眼", "鼻", "口"],
+    "按宫位检索": ["命宫", "财帛宫", "兄弟宫", "田宅宫", "男女宫", "奴仆宫", "妻妾宫", "疾厄宫", "迁移宫", "官禄宫", "福德宫", "父母宫"],
+    "按五行检索": ["水", "木", "火", "土", "金"],
+    "按年龄检索": ["1-7岁", "8-14岁", "15-30岁", "31-50岁", "51岁以后", "41岁", "48岁", "60岁", "71岁"],
+    "按运势检索": ["事业运", "财运", "婚姻运", "子女运", "健康运", "贵人运"],
+    "按气色检索": ["黄色", "红色", "青黑色", "白色"],
+    "按性格检索": ["智慧", "情感", "意志", "信用", "胆识", "权谋"]
+  },
+
+  "使用说明": {
+    "检索方式": "可通过部位、宫位、五行、年龄、运势、气色、性格等多维度检索",
+    "推理流程": "形态特征 → 五行属性 → 性格特质 → 命运映射 → 气色验证 → 综合判断",
+    "权重分配": "骨相30% + 肉相30% + 气色20% + 德行20%",
+    "时效性": "气色诊断30-100天，肉相变化3年，骨相变化10年以上",
+    "注意事项": "本知识库为传统文化研究工具，不作为科学预测依据，需结合现代心理学、医学综合判断"
+  }
+}

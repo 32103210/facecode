@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试结果页面</title>
+</head>
+<body>
+    <h1>测试新数据格式</h1>
+    <button id="test-btn">生成测试数据并跳转</button>
+    
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script>
+        document.getElementById('test-btn').addEventListener('click', () => {
+            // 创建测试数据
+            const testData = {
+                originalImage: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==',
+                analysis: {
+                    "命运总览": {
+                        "内容": "你的面藏风水，气自成局；命中注定不是随波逐流的人。"
+                    },
+                    "五官解读": {
+                        "额": {
+                            "描述": "天庭宽阔，志在高远",
+                            "典籍": "出自《柳庄相法·三停论》"
+                        },
+                        "眉": {
+                            "描述": "眉形柔中带锋，有主见亦有温度"
+                        },
+                        "眼": {
+                            "描述": "目光藏笑，是温柔的策士"
+                        },
+                        "鼻": {
+                            "描述": "鼻正气顺，财缘自稳",
+                            "典籍": "见《神相全编》"
+                        },
+                        "唇": {
+                            "描述": "唇色和气，言语有福"
+                        }
+                    },
+                    "气运分析": {
+                        "内容": "气聚中庭，贵人运渐起；你或许已站在转机之前，只待一句真心的话语成全未来。近期宜静观其变，顺势而为，切勿强求。"
+                    },
+                    "修炼建议": {
+                        "内容": "静坐三息，观心而不执；凡事不急，运自来。若有不顺，宜以光亮之物相伴，晨起面东而立，纳清气以养神。"
+                    },
+                    "传播金句": {
+                        "内容": "命里藏buff，天生开挂脸。"
+                    }
+                }
+            };
+            
+            console.log('保存测试数据:', testData);
+            
+            // 保存到 sessionStorage
+            Storage.saveSessionData(testData);
+            
+            // 跳转到结果页
+            window.location.href = 'result-simple.html';
+        });
+    </script>
+</body>
+</html>
+

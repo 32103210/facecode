@@ -13,10 +13,8 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 // 路由
-const agingRouter = require('./routes/aging');
 const analysisRouter = require('./routes/analysis');
 
-app.use('/api/face/aging', agingRouter);
 app.use('/api/face/analyze', analysisRouter);
 
 // 健康检查

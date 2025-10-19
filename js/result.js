@@ -3,26 +3,48 @@
 let carousel = null;
 
 document.addEventListener('DOMContentLoaded', () => {
+  console.log('========== 结果页面已加载 ==========');
+  
   // 获取结果数据
   const resultData = Storage.getSessionData();
+  console.log('从 Session 获取的结果数据:', resultData);
+  
   if (!resultData) {
+    console.error('❌ 没有找到结果数据');
     alert('没有找到结果数据，请重新开始');
     window.location.href = 'index.html';
     return;
   }
 
+  console.log('✅ 结果数据验证通过');
+  console.log('📊 数据详情:');
+  console.log('  - 原始图片长度:', resultData.originalImage ? resultData.originalImage.length : 0);
+  console.log('  - 分析结果:', resultData.analysis);
+  console.log('    · 姻缘:', resultData.analysis?.marriage);
+  console.log('    · 事业:', resultData.analysis?.career);
+  console.log('    · 财运:', resultData.analysis?.wealth);
+
   // 设置 UI 框架图片
   const uiImage = document.getElementById('result-ui-image');
+  console.log('🖼️  UI 框架图片路径:', CONFIG.RESULT_UI_IMAGE);
   uiImage.src = CONFIG.RESULT_UI_IMAGE;
 
   // 等待 UI 图片加载完成后设置布局
   uiImage.onload = () => {
+    console.log('✅ UI 框架图片加载成功');
     setupLayout();
+    displayResults(resultData);
+  };
+
+  uiImage.onerror = (error) => {
+    console.error('❌ UI 框架图片加载失败:', error);
+    console.log('⚠️  将继续显示结果（无框架图片）');
     displayResults(resultData);
   };
 
   // 如果图片已经缓存，立即设置
   if (uiImage.complete) {
+    console.log('✅ UI 框架图片已缓存');
     setupLayout();
     displayResults(resultData);
   }
@@ -38,13 +60,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // 设置布局
 function setupLayout() {
+  console.log('🎨 开始设置布局');
   const layout = CONFIG.RESULT_LAYOUT;
+  console.log('布局配置:', layout);
   
   // 设置各个内容区域的位置
   Object.keys(layout).forEach(key => {
-    const element = document.getElementById(key.replace(/([A-Z])/g, '-$1').toLowerCase());
+    const elementId = key.replace(/([A-Z])/g, '-$1').toLowerCase();
+    const element = document.getElementById(elementId);
+    
     if (element && layout[key]) {
       const styles = layout[key];
+      console.log(`  设置 ${elementId} 的样式:`, styles);
+      
       element.style.top = styles.top;
       element.style.left = styles.left;
       element.style.width = styles.width;
@@ -57,28 +85,66 @@ function setupLayout() {
       if (styles.color) {
         element.style.color = styles.color;
       }
+    } else {
+      console.warn(`  ⚠️  未找到元素: ${elementId}`);
     }
   });
+  
+  console.log('✅ 布局设置完成');
 }
 
 // 显示结果
 function displayResults(data) {
-  // 显示原始图片
-  document.getElementById('original-image').src = data.originalImage;
-
-  // 初始化轮播图
-  const track = document.getElementById('carousel-track');
-  const prevBtn = document.getElementById('carousel-prev');
-  const nextBtn = document.getElementById('carousel-next');
-  const indicators = document.getElementById('carousel-indicators');
+  console.log('📝 开始显示结果');
   
-  carousel = new Carousel(track, prevBtn, nextBtn, indicators);
-  carousel.loadImages(data.agedImages);
+  try {
+    // 显示原始图片
+    const originalImage = document.getElementById('original-image');
+    if (originalImage) {
+      originalImage.src = data.originalImage;
+      console.log('✅ 原始图片已设置');
+    } else {
+      console.error('❌ 未找到 original-image 元素');
+    }
 
-  // 显示面相解析
-  document.getElementById('marriage-content').textContent = data.analysis.marriage;
-  document.getElementById('career-content').textContent = data.analysis.career;
-  document.getElementById('wealth-content').textContent = data.analysis.wealth;
+    // 隐藏变老图片轮播区域（不再使用）
+    const carouselContainer = document.getElementById('aged-images-carousel');
+    if (carouselContainer) {
+      carouselContainer.style.display = 'none';
+      console.log('✅ 轮播区域已隐藏');
+    }
+
+    // 显示面相解析
+    const marriageContent = document.getElementById('marriage-content');
+    const careerContent = document.getElementById('career-content');
+    const wealthContent = document.getElementById('wealth-content');
+    
+    if (marriageContent && data.analysis?.marriage) {
+      marriageContent.textContent = data.analysis.marriage;
+      console.log('✅ 姻缘内容已设置:', data.analysis.marriage.substring(0, 50) + '...');
+    } else {
+      console.error('❌ 姻缘内容设置失败');
+    }
+    
+    if (careerContent && data.analysis?.career) {
+      careerContent.textContent = data.analysis.career;
+      console.log('✅ 事业内容已设置:', data.analysis.career.substring(0, 50) + '...');
+    } else {
+      console.error('❌ 事业内容设置失败');
+    }
+    
+    if (wealthContent && data.analysis?.wealth) {
+      wealthContent.textContent = data.analysis.wealth;
+      console.log('✅ 财运内容已设置:', data.analysis.wealth.substring(0, 50) + '...');
+    } else {
+      console.error('❌ 财运内容设置失败');
+    }
+    
+    console.log('========== 结果显示完成 ==========');
+  } catch (error) {
+    console.error('❌ 显示结果时出错:', error);
+    console.error('错误堆栈:', error.stack);
+  }
 }
 
 // 分享结果
@@ -104,84 +170,81 @@ function shareResult(data) {
   const originalImg = new Image();
   originalImg.crossOrigin = 'anonymous';
   originalImg.onload = () => {
-    // 绘制原始图片
-    const imgWidth = 400;
+    // 绘制原始图片（居中）
+    const imgWidth = 600;
     const imgHeight = (originalImg.height / originalImg.width) * imgWidth;
-    ctx.drawImage(originalImg, 100, 150, imgWidth, imgHeight);
+    ctx.drawImage(originalImg, (canvas.width - imgWidth) / 2, 150, imgWidth, imgHeight);
 
-    // 绘制变老图片
-    const agedImg = new Image();
-    agedImg.crossOrigin = 'anonymous';
-    const currentAgedImage = carousel.getCurrentImage();
-    agedImg.onload = () => {
-      ctx.drawImage(agedImg, 580, 150, imgWidth, imgHeight);
+    // 绘制文字
+    let y = 150 + imgHeight + 80;
+    
+    ctx.font = 'bold 32px Arial';
+    ctx.fillStyle = '#5B9A9F';
+    ctx.textAlign = 'left';
+    
+    // 姻缘
+    ctx.fillText('姻缘', 100, y);
+    y += 50;
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#B0B0B0';
+    wrapText(ctx, data.analysis.marriage, 100, y, 880, 35);
+    y += 180;
 
-      // 绘制文字
-      ctx.font = '24px Arial';
-      ctx.textAlign = 'left';
-      ctx.fillStyle = '#333';
+    // 事业
+    ctx.font = 'bold 32px Arial';
+    ctx.fillStyle = '#5B9A9F';
+    ctx.fillText('事业', 100, y);
+    y += 50;
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#B0B0B0';
+    wrapText(ctx, data.analysis.career, 100, y, 880, 35);
+    y += 180;
 
-      let y = 150 + imgHeight + 80;
+    // 财运
+    ctx.font = 'bold 32px Arial';
+    ctx.fillStyle = '#5B9A9F';
+    ctx.fillText('财运', 100, y);
+    y += 50;
+    ctx.font = '24px Arial';
+    ctx.fillStyle = '#B0B0B0';
+    wrapText(ctx, data.analysis.wealth, 100, y, 880, 35);
 
-      // 姻缘
-      ctx.font = 'bold 28px Arial';
-      ctx.fillText('姻缘', 100, y);
-      y += 40;
-      ctx.font = '20px Arial';
-      wrapText(ctx, data.analysis.marriage, 100, y, 880, 30);
-      y += 150;
-
-      // 事业
-      ctx.font = 'bold 28px Arial';
-      ctx.fillText('事业', 100, y);
-      y += 40;
-      ctx.font = '20px Arial';
-      wrapText(ctx, data.analysis.career, 100, y, 880, 30);
-      y += 150;
-
-      // 财运
-      ctx.font = 'bold 28px Arial';
-      ctx.fillText('财运', 100, y);
-      y += 40;
-      ctx.font = '20px Arial';
-      wrapText(ctx, data.analysis.wealth, 100, y, 880, 30);
-
-      // 下载图片
-      canvas.toBlob((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `facecode_${Date.now()}.png`;
-        a.click();
-        URL.revokeObjectURL(url);
-        alert('分享图片已保存！');
-      });
-    };
-    agedImg.src = currentAgedImage || data.agedImages[0].url;
+    // 下载图片
+    canvas.toBlob((blob) => {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `facecode_${Date.now()}.png`;
+      a.click();
+      URL.revokeObjectURL(url);
+      alert('分享图片已保存！');
+    });
   };
   originalImg.src = data.originalImage;
 }
 
 // 文字换行
 function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
-  const words = text.split('');
+  const chars = text.split('');
   let line = '';
   let lines = 0;
 
-  for (let i = 0; i < words.length; i++) {
-    const testLine = line + words[i];
+  for (let i = 0; i < chars.length; i++) {
+    const testLine = line + chars[i];
     const metrics = ctx.measureText(testLine);
-    if (metrics.width > maxWidth && i > 0) {
+    
+    if (metrics.width > maxWidth && line.length > 0) {
       ctx.fillText(line, x, y);
-      line = words[i];
+      line = chars[i];
       y += lineHeight;
       lines++;
-      if (lines >= 4) break; // 最多4行
+      if (lines >= 4) break;
     } else {
       line = testLine;
     }
   }
-  if (lines < 4) {
+  
+  if (lines < 4 && line.length > 0) {
     ctx.fillText(line, x, y);
   }
 }

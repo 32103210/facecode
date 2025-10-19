@@ -1,40 +1,6 @@
 // API 调用模块
 
 const API = {
-  // 调用极梦 API 生成变老图片
-  async callAgingAPI(imageBase64, jimengApiKey) {
-    if (CONFIG.MOCK_MODE) {
-      // Mock 数据
-      return new Promise((resolve) => {
-        setTimeout(() => {
-          resolve({
-            ok: true,
-            original_image: imageBase64,
-            aged_images: [
-              { age: '30岁', url: imageBase64 },
-              { age: '50岁', url: imageBase64 },
-              { age: '70岁', url: imageBase64 }
-            ]
-          });
-        }, 2000);
-      });
-    }
-
-    const url = `${CONFIG.API_BASE_URL}/face/aging`;
-    const response = await this.fetchWithRetry(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        image: imageBase64,
-        jimeng_api_key: jimengApiKey
-      })
-    });
-
-    return response;
-  },
-
   // 调用 OpenAI GPT-5 生成面相解析
   async callAnalysisAPI(imageBase64, openaiApiKey) {
     if (CONFIG.MOCK_MODE) {
@@ -44,9 +10,37 @@ const API = {
           resolve({
             ok: true,
             analysis: {
-              marriage: '从面相来看，您的眉眼温和，唇角微扬，这是桃花运旺盛的象征。感情路上虽有波折，但终能遇到心仪之人。建议在选择伴侣时多听从内心，不要过于追求完美。婚后需注意沟通，以柔克刚，方能白头偕老。',
-              career: '您的额头饱满，鼻梁挺直，这是事业有成的面相。在职场上有较强的领导力和决策能力，适合从事管理或创业。但需注意不要过于刚强，学会倾听他人意见。中年后事业将迎来高峰，财富也会随之而来。',
-              wealth: '从鼻相来看，您的财运较为稳定，正财运佳。适合通过稳健投资积累财富，不宜冒险投机。中年后财运会有明显提升，但需注意理财规划。建议多行善事，财富自然会源源不断。'
+              "命运总览": {
+                "内容": "你的面藏风水，气自成局；命中注定不是随波逐流的人。"
+              },
+              "五官解读": {
+                "额": {
+                  "描述": "天庭宽阔，志在高远",
+                  "典籍": "出自《柳庄相法·三停论》"
+                },
+                "眉": {
+                  "描述": "眉形柔中带锋，有主见亦有温度"
+                },
+                "眼": {
+                  "描述": "目光藏笑，是温柔的策士"
+                },
+                "鼻": {
+                  "描述": "鼻正气顺，财缘自稳",
+                  "典籍": "见《神相全编》"
+                },
+                "唇": {
+                  "描述": "唇色和气，言语有福"
+                }
+              },
+              "气运分析": {
+                "内容": "气聚中庭，贵人运渐起；你或许已站在转机之前，只待一句真心的话语成全未来。近期宜静观其变，顺势而为，切勿强求。"
+              },
+              "修炼建议": {
+                "内容": "静坐三息，观心而不执；凡事不急，运自来。若有不顺，宜以光亮之物相伴，晨起面东而立，纳清气以养神。"
+              },
+              "传播金句": {
+                "内容": "命里藏buff，天生开挂脸。"
+              }
             }
           });
         }, 2000);

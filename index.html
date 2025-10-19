@@ -20,43 +20,132 @@
     <!-- 主要内容 -->
     <div class="container">
         <header>
-            <h1>FaceCode｜面码</h1>
-            <p class="subtitle">AI 面相解析 · 洞察命运玄机</p>
+            <h1>AI 面相解析 · 洞察命运玄机</h1>
+            <!-- <p class="subtitle"></p> -->
+            <button id="settings-btn" class="settings-btn">⚙️</button>
         </header>
 
         <main>
-            <!-- API Key 配置区 -->
-            <section class="api-config">
-                <h2>API 配置</h2>
-                <div class="form-group">
-                    <label for="jimeng-key">极梦 API Key</label>
-                    <input type="text" id="jimeng-key" placeholder="请输入极梦 API Key">
+            <!-- 摄像头扫描区 -->
+            <section class="scan-section">
+                <!-- 摄像头视频流 -->
+                <div id="camera-container" class="camera-active">
+                    <div class="camera-view">
+                        <video id="camera-video" autoplay playsinline></video>
+                        <canvas id="camera-canvas" style="display: none;"></canvas>
+                        
+                        <!-- 人脸识别框 -->
+                        <div class="face-frame">
+                            <div class="face-corner tl"></div>
+                            <div class="face-corner tr"></div>
+                            <div class="face-corner bl"></div>
+                            <div class="face-corner br"></div>
+                            <div class="face-outline">
+                                <!-- 人脸轮廓 SVG - 虚线样式 -->
+                                <svg viewBox="0 0 200 300" class="face-silhouette">
+                                    <!-- 头部轮廓 -->
+                                    <path d="M 100 20 
+                                             C 70 20, 50 35, 40 60
+                                             C 35 75, 30 95, 30 115
+                                             C 30 135, 32 155, 38 170
+                                             C 45 190, 55 205, 70 215
+                                             C 80 222, 90 225, 100 227
+                                             C 110 225, 120 222, 130 215
+                                             C 145 205, 155 190, 162 170
+                                             C 168 155, 170 135, 170 115
+                                             C 170 95, 165 75, 160 60
+                                             C 150 35, 130 20, 100 20 Z" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.95)" 
+                                          stroke-width="3" 
+                                          stroke-dasharray="8,6"/>
+                                    
+                                    <!-- 发际线 -->
+                                    <path d="M 45 55 Q 100 45, 155 55" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.85)" 
+                                          stroke-width="2.5" 
+                                          stroke-dasharray="5,4"/>
+                                    
+                                    <!-- 左眉毛 -->
+                                    <path d="M 60 90 Q 75 87, 85 90" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.9)" 
+                                          stroke-width="3" 
+                                          stroke-dasharray="4,3"/>
+                                    
+                                    <!-- 右眉毛 -->
+                                    <path d="M 115 90 Q 125 87, 140 90" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.9)" 
+                                          stroke-width="3" 
+                                          stroke-dasharray="4,3"/>
+                                    
+                                    <!-- 左眼 -->
+                                    <ellipse cx="72" cy="105" rx="15" ry="10" 
+                                             fill="none" 
+                                             stroke="rgba(102, 126, 234, 0.9)" 
+                                             stroke-width="2.5" 
+                                             stroke-dasharray="3,2"/>
+                                    
+                                    <!-- 右眼 -->
+                                    <ellipse cx="128" cy="105" rx="15" ry="10" 
+                                             fill="none" 
+                                             stroke="rgba(102, 126, 234, 0.9)" 
+                                             stroke-width="2.5" 
+                                             stroke-dasharray="3,2"/>
+                                    
+                                    <!-- 鼻子 -->
+                                    <path d="M 100 95 L 100 135 M 95 130 L 100 135 L 105 130" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.9)" 
+                                          stroke-width="2.5" 
+                                          stroke-dasharray="4,3"/>
+                                    
+                                    <!-- 嘴巴 -->
+                                    <path d="M 75 165 Q 100 172, 125 165" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.9)" 
+                                          stroke-width="3" 
+                                          stroke-dasharray="4,3"/>
+                                    
+                                    <!-- 下巴轮廓线 -->
+                                    <path d="M 70 215 Q 100 227, 130 215" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.85)" 
+                                          stroke-width="2.5" 
+                                          stroke-dasharray="5,4"/>
+                                    
+                                    <!-- 颈部 -->
+                                    <path d="M 85 225 L 80 260 M 115 225 L 120 260" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.85)" 
+                                          stroke-width="2.5" 
+                                          stroke-dasharray="5,4"/>
+                                    
+                                    <!-- 肩膀 -->
+                                    <path d="M 80 260 Q 60 275, 30 285 M 120 260 Q 140 275, 170 285" 
+                                          fill="none" 
+                                          stroke="rgba(102, 126, 234, 0.85)" 
+                                          stroke-width="2.5" 
+                                          stroke-dasharray="5,4"/>
+                                </svg>
+                            </div>
+                            <div class="scan-hint">请将面部对准轮廓引导线</div>
+                        </div>
+                    </div>
+                    
+                    <div class="camera-controls">
+                        <button id="capture-btn" class="btn-capture">
+                            <span class="capture-icon"></span>
+                        </button>
+                        <button id="upload-btn" class="btn-upload">
+                            <span class="icon">📁</span>
+                            上传照片
+                        </button>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="openai-key">OpenAI API Key</label>
-                    <input type="password" id="openai-key" placeholder="请输入 OpenAI API Key">
-                </div>
-                <div class="form-group checkbox">
-                    <label>
-                        <input type="checkbox" id="save-keys" checked>
-                        保存 API Key 到本地
-                    </label>
-                </div>
-            </section>
-
-            <!-- 拍照/上传区 -->
-            <section class="photo-section">
-                <h2>上传照片</h2>
-                <div class="photo-controls">
-                    <button id="camera-btn" class="btn btn-primary">
-                        <span class="icon">📷</span>
-                        使用摄像头
-                    </button>
-                    <button id="upload-btn" class="btn btn-secondary">
-                        <span class="icon">📁</span>
-                        上传照片
-                    </button>
-                </div>
+                
                 <input type="file" id="file-input" accept="image/*" style="display: none;">
                 
                 <!-- 预览区 -->
@@ -68,16 +157,6 @@
                     </div>
                 </div>
             </section>
-
-            <!-- 摄像头视频流 -->
-            <div id="camera-container" style="display: none;">
-                <video id="camera-video" autoplay playsinline></video>
-                <canvas id="camera-canvas" style="display: none;"></canvas>
-                <div class="camera-controls">
-                    <button id="capture-btn" class="btn btn-primary">拍照</button>
-                    <button id="close-camera-btn" class="btn btn-secondary">关闭摄像头</button>
-                </div>
-            </div>
         </main>
 
         <footer>

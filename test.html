@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>测试页面 - FaceCode</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        button {
+            padding: 10px 20px;
+            margin: 10px 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            background: #f0f0f0;
+            border-radius: 5px;
+        }
+        pre {
+            background: #333;
+            color: #0f0;
+            padding: 10px;
+            border-radius: 5px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>FaceCode 测试页面</h1>
+    
+    <h2>1. 测试配置</h2>
+    <button onclick="testConfig()">检查配置</button>
+    
+    <h2>2. 测试存储</h2>
+    <button onclick="testStorage()">测试 Storage</button>
+    <button onclick="clearStorage()">清空 Storage</button>
+    
+    <h2>3. 测试 API (Mock 模式)</h2>
+    <button onclick="testAPI()">测试 API 调用</button>
+    
+    <h2>4. 测试页面跳转</h2>
+    <button onclick="goToWelcome()">欢迎页</button>
+    <button onclick="goToIndex()">拍摄页</button>
+    <button onclick="goToSettings()">设置页</button>
+    
+    <div id="result" class="result"></div>
+    
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/api.js"></script>
+    
+    <script>
+        const resultDiv = document.getElementById('result');
+        
+        function log(message, data = null) {
+            console.log(message, data);
+            let html = `<p><strong>${message}</strong></p>`;
+            if (data) {
+                html += `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            }
+            resultDiv.innerHTML = html;
+        }
+        
+        function testConfig() {
+            log('配置信息:', CONFIG);
+        }
+        
+        function testStorage() {
+            // 测试保存和读取
+            const testData = {
+                image: 'data:image/jpeg;base64,test123',
+                openaiKey: 'test-key'
+            };
+            
+            Storage.saveSessionData(testData);
+            const retrieved = Storage.getSessionData();
+            
+            log('存储测试结果:', {
+                saved: testData,
+                retrieved: retrieved,
+                match: JSON.stringify(testData) === JSON.stringify(retrieved)
+            });
+        }
+        
+        function clearStorage() {
+            Storage.clearSessionData();
+            Storage.clearApiKeys();
+            Storage.clearHistory();
+            log('所有存储已清空');
+        }
+        
+        async function testAPI() {
+            log('开始测试 API...');
+            try {
+                const result = await API.callAnalysisAPI('test-image-data', 'test-key');
+                log('API 调用成功:', result);
+            } catch (error) {
+                log('API 调用失败:', { error: error.message });
+            }
+        }
+        
+        function goToWelcome() {
+            window.location.href = 'welcome.html';
+        }
+        
+        function goToIndex() {
+            window.location.href = 'index.html';
+        }
+        
+        function goToSettings() {
+            window.location.href = 'settings.html';
+        }
+    </script>
+</body>
+</html>
+

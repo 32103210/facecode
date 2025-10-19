@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>过渡页面测试</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            overflow: hidden;
+            height: 100vh;
+            background: #000;
+            font-family: monospace;
+        }
+        
+        .video-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            animation: fadeIn 2s ease-out forwards;
+            transition: opacity 1s ease-in-out;
+        }
+        
+        .video-container.fade-out {
+            opacity: 0;
+        }
+        
+        video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .info {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: rgba(0, 0, 0, 0.9);
+            color: #0f0;
+            padding: 20px;
+            border-radius: 8px;
+            z-index: 100;
+            max-width: 500px;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+        
+        .progress-bar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background: #667eea;
+            width: 0%;
+            transition: width 0.1s linear;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-container">
+        <video id="test-video" autoplay muted playsinline>
+            <source src="第一页触发16比9hd-1.mp4" type="video/mp4">
+        </video>
+    </div>
+    
+    <div class="info" id="info">
+        <strong>过渡页面测试</strong><br>
+        <span id="status">初始化中...</span>
+    </div>
+    
+    <div class="progress-bar" id="progress"></div>
+    
+    <script>
+        const video = document.getElementById('test-video');
+        const status = document.getElementById('status');
+        const progress = document.getElementById('progress');
+        
+        let log = '';
+        function addLog(msg) {
+            console.log(msg);
+            log += msg + '<br>';
+            status.innerHTML = log;
+        }
+        
+        addLog('⏰ ' + new Date().toLocaleTimeString());
+        addLog('📹 视频文件: 第一页触发16比9hd-1.mp4');
+        
+        video.addEventListener('loadstart', () => {
+            addLog('🔄 开始加载视频...');
+        });
+        
+        video.addEventListener('loadedmetadata', () => {
+            addLog('📊 视频元数据加载完成');
+            addLog(`   时长: ${video.duration.toFixed(2)}秒`);
+            addLog(`   尺寸: ${video.videoWidth}x${video.videoHeight}`);
+        });
+        
+        video.addEventListener('loadeddata', () => {
+            addLog('✅ 视频数据加载完成');
+        });
+        
+        video.addEventListener('canplay', () => {
+            addLog('▶️  视频可以播放');
+        });
+        
+        video.addEventListener('play', () => {
+            addLog('🎬 视频开始播放');
+        });
+        
+        video.addEventListener('playing', () => {
+            addLog('▶️  视频正在播放');
+        });
+        
+        video.addEventListener('error', (e) => {
+            addLog('❌ 视频加载错误');
+            console.error(e);
+        });
+        
+        // 进度条
+        let startTime = Date.now();
+        let duration = 5000; // 5秒（4秒显示 + 1秒淡出）
+        
+        const updateProgress = setInterval(() => {
+            const elapsed = Date.now() - startTime;
+            const percent = Math.min((elapsed / duration) * 100, 100);
+            progress.style.width = percent + '%';
+            
+            if (elapsed >= 4000 && !document.querySelector('.video-container').classList.contains('fade-out')) {
+                addLog('🌙 开始淡出效果（1秒）...');
+                document.querySelector('.video-container').classList.add('fade-out');
+                document.querySelector('.info').style.transition = 'opacity 1s ease-in-out';
+                document.querySelector('.info').style.opacity = '0';
+            }
+            
+            if (percent >= 100) {
+                clearInterval(updateProgress);
+                addLog('🚀 5秒已到，可以跳转');
+                // window.location.href = 'index.html';
+            }
+        }, 50);
+        
+        addLog('✨ CSS淡入动画: 0% → 100% (2秒)');
+        addLog('⏱️  页面停留时间: 4秒 + 1秒淡出 = 5秒总时长');
+    </script>
+</body>
+</html>
+

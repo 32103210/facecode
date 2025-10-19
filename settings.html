@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>设置 - FaceCode</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body class="settings-page">
+    <!-- 背景视频 -->
+    <video id="background-video" autoplay loop muted playsinline>
+        <source id="video-source" src="" type="video/mp4">
+        您的浏览器不支持视频播放。
+    </video>
+
+    <!-- 内容遮罩 -->
+    <div class="overlay"></div>
+
+    <!-- 主要内容 -->
+    <div class="container">
+        <header>
+            <button id="back-btn" class="back-btn">← 返回</button>
+            <h1>设置</h1>
+        </header>
+
+        <main>
+            <!-- API Key 配置 -->
+            <section class="settings-section">
+                <h2>API 配置</h2>
+                <div class="form-group">
+                    <label for="openai-key">OpenAI API Key</label>
+                    <input type="password" id="openai-key" placeholder="请输入 OpenAI API Key">
+                    <p class="form-hint">用于生成面相解析（姻缘、事业、财运）</p>
+                </div>
+                <div class="form-group checkbox">
+                    <label>
+                        <input type="checkbox" id="save-keys" checked>
+                        保存 API Key 到本地
+                    </label>
+                </div>
+                <button id="save-settings-btn" class="btn btn-primary">保存设置</button>
+            </section>
+
+            <!-- 数据管理 -->
+            <section class="settings-section">
+                <h2>数据管理</h2>
+                <button id="clear-history-btn" class="btn btn-secondary">清除历史记录</button>
+                <button id="clear-keys-btn" class="btn btn-secondary">清除 API Keys</button>
+            </section>
+
+            <!-- 关于 -->
+            <section class="settings-section">
+                <h2>关于</h2>
+                <div class="about-info">
+                    <p><strong>FaceCode｜面码</strong></p>
+                    <p>版本：v2.0.0</p>
+                    <p>基于 AI 的面相解析应用</p>
+                    <p>&copy; 2025 FaceCode. All rights reserved.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/settings.js"></script>
+</body>
+</html>
+

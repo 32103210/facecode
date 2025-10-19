@@ -1,21 +1,29 @@
 // 加载页面逻辑
 
 document.addEventListener('DOMContentLoaded', async () => {
+  console.log('加载页面已启动');
+  
   // 设置预加载视频
   const videoSource = document.getElementById('video-source');
   const loadingVideo = document.getElementById('loading-video');
   videoSource.src = CONFIG.LOADING_VIDEO;
   loadingVideo.load();
+  console.log('视频源设置为:', CONFIG.LOADING_VIDEO);
 
   // 获取 session 数据
   const sessionData = Storage.getSessionData();
+  console.log('Session 数据:', sessionData ? '已获取' : '未找到');
+  
   if (!sessionData) {
     alert('数据丢失，请重新开始');
     window.location.href = 'index.html';
     return;
   }
 
-  const { image, jimengKey, openaiKey } = sessionData;
+  const { image, openaiKey } = sessionData;
+  console.log('图片数据长度:', image ? image.length : 0);
+  console.log('API Key:', openaiKey);
+  
   const statusElement = document.getElementById('loading-status');
 
   let apiResults = null;
@@ -43,25 +51,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   });
 
-  // 并行调用两个 API
+  // 调用 OpenAI API 生成面相解析
   try {
-    statusElement.textContent = '正在生成变老状态图和面相解析...';
+    statusElement.textContent = '正在分析您的面相...';
+    console.log('开始调用 API...');
 
-    const [agingResult, analysisResult] = await Promise.all([
-      API.callAgingAPI(image, jimengKey),
-      API.callAnalysisAPI(image, openaiKey)
-    ]);
+    const analysisResult = await API.callAnalysisAPI(image, openaiKey);
+    console.log('API 调用结果:', analysisResult);
 
-    if (!agingResult.ok || !analysisResult.ok) {
+    if (!analysisResult.ok) {
       throw new Error('API 调用失败');
     }
 
     apiResults = {
       originalImage: image,
-      agedImages: agingResult.aged_images,
       analysis: analysisResult.analysis
     };
 
+    console.log('API 结果已保存:', apiResults);
     statusElement.textContent = '分析完成，即将展示结果...';
 
     // 如果视频还在播放，等待当前循环结束
@@ -91,10 +98,18 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   function navigateToResult() {
+    console.log('准备跳转到结果页');
+    console.log('最终结果数据:', apiResults);
+    
     // 保存结果到 session
     Storage.saveSessionData(apiResults);
-    // 跳转到结果页
-    window.location.href = 'result.html';
+    console.log('结果已保存到 Session');
+    
+    // 跳转到结果页（使用简化版便于调试）
+    // 可以改为 'result.html' 使用完整版
+    const resultPage = CONFIG.USE_SIMPLE_RESULT ? 'result-simple.html' : 'result.html';
+    console.log('跳转到:', resultPage);
+    window.location.href = resultPage;
   }
 });
 

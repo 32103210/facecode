@@ -46,19 +46,37 @@ echo "🌐 启动前端服务..."
 
 if command -v python3 &> /dev/null; then
     echo "使用 Python3 启动前端服务器..."
-    echo "前端地址: http://localhost:8000"
+    echo "前端地址: http://localhost:8000/welcome.html"
     echo "后端地址: http://localhost:3000"
     echo ""
     echo "按 Ctrl+C 停止服务"
     echo ""
+    
+    # 自动打开浏览器
+    sleep 1
+    if command -v open &> /dev/null; then
+        open http://localhost:8000/welcome.html
+    elif command -v xdg-open &> /dev/null; then
+        xdg-open http://localhost:8000/welcome.html
+    fi
+    
     python3 -m http.server 8000
 elif command -v python &> /dev/null; then
     echo "使用 Python 启动前端服务器..."
-    echo "前端地址: http://localhost:8000"
+    echo "前端地址: http://localhost:8000/welcome.html"
     echo "后端地址: http://localhost:3000"
     echo ""
     echo "按 Ctrl+C 停止服务"
     echo ""
+    
+    # 自动打开浏览器
+    sleep 1
+    if command -v open &> /dev/null; then
+        open http://localhost:8000/welcome.html
+    elif command -v xdg-open &> /dev/null; then
+        xdg-open http://localhost:8000/welcome.html
+    fi
+    
     python -m http.server 8000
 else
     echo "❌ 未找到 Python，请手动启动前端服务器"

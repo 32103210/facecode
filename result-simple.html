@@ -1,0 +1,1383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>面相解析结果 - FaceCode (简化版)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', 'Microsoft YaHei', sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+            overflow-x: hidden;
+            position: relative;
+        }
+        
+        /* 背景视频 */
+        #background-video {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            z-index: -2;
+        }
+        
+        /* 遮罩层 */
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: -1;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 50px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            opacity: 0;
+            animation: fadeIn 0.8s ease-out 0.2s forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            margin-bottom: 30px;
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 命运总览 - 突出显示 */
+        .destiny-overview {
+            text-align: center;
+            margin-bottom: 50px;
+            padding: 50px 40px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(102, 126, 234, 0.4);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .destiny-overview::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 20s linear infinite;
+        }
+        
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        
+        .destiny-overview h2 {
+            color: white;
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            letter-spacing: 5px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .destiny-overview p {
+            color: white;
+            font-size: 22px;
+            line-height: 2;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            position: relative;
+            z-index: 1;
+        }
+        
+        /* 照片区域 - 居中显示 */
+        .image-section {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+        
+        .image-section h3 {
+            color: #2c3e50;
+            font-size: 24px;
+            font-weight: 600;
+            margin-bottom: 25px;
+            letter-spacing: 2px;
+        }
+        
+        .image-container {
+            position: relative;
+            display: inline-block;
+            max-width: 500px;
+        }
+        
+        .image-section img {
+            width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        /* 面相标注点 */
+        .face-marker {
+            position: absolute;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            border: 3px solid;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        
+        .face-marker::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid;
+            opacity: 0;
+            animation: ripple 2s ease-out infinite;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+        
+        @keyframes ripple {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0.8; }
+            100% { transform: translate(-50%, -50%) scale(2); opacity: 0; }
+        }
+        
+        /* 额头 - 天庭 */
+        .marker-forehead {
+            border-color: #9b59b6;
+            top: 15%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-forehead::after {
+            border-color: #9b59b6;
+        }
+        
+        /* 眉毛 */
+        .marker-eyebrow {
+            border-color: #3498db;
+            top: 32%;
+            left: 40%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-eyebrow::after {
+            border-color: #3498db;
+        }
+        
+        /* 眼睛 */
+        .marker-eye {
+            border-color: #1abc9c;
+            top: 42%;
+            left: 60%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-eye::after {
+            border-color: #1abc9c;
+        }
+        
+        /* 鼻子 */
+        .marker-nose {
+            border-color: #f39c12;
+            top: 58%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-nose::after {
+            border-color: #f39c12;
+        }
+        
+        /* 嘴唇 */
+        .marker-lip {
+            border-color: #e74c3c;
+            top: 75%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        .marker-lip::after {
+            border-color: #e74c3c;
+        }
+        
+        /* 标注点悬停时放大 */
+        .face-marker:hover {
+            transform: translate(-50%, -50%) scale(1.5);
+            z-index: 20;
+        }
+        
+        /* 连接线 */
+        .connection-line {
+            position: absolute;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, currentColor, transparent);
+            opacity: 0;
+            transition: all 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .connection-line.active {
+            opacity: 0.6;
+            animation: flowLine 1.5s ease-in-out infinite;
+        }
+        
+        @keyframes flowLine {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* 子板块区域 */
+        .analysis-section {
+            margin-bottom: 40px;
+        }
+        
+        /* 子板块按钮网格 */
+        .section-tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .tab-btn {
+            padding: 25px 20px;
+            border: 2px solid #e0e0e0;
+            background: white;
+            color: #2c3e50;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tab-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transform: scaleX(0);
+            transition: transform 0.3s ease;
+        }
+        
+        .tab-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+            border-color: #667eea;
+        }
+        
+        .tab-btn:hover::before {
+            transform: scaleX(1);
+        }
+        
+        .tab-btn.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.5);
+        }
+        
+        .tab-btn.active::before {
+            display: none;
+        }
+        
+        /* 内容面板 */
+        .section-content {
+            position: relative;
+            min-height: 200px;
+        }
+        
+        .content-panel {
+            display: none;
+            animation: fadeInPanel 0.5s ease-out;
+        }
+        
+        .content-panel.active {
+            display: block;
+        }
+        
+        /* 空状态提示 */
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #95a5a6;
+            font-size: 18px;
+            font-weight: 500;
+        }
+        
+        .empty-state::before {
+            content: '👆';
+            display: block;
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        @keyframes fadeInPanel {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .analysis-item {
+            background: linear-gradient(135deg, #f8f9fa 0%, #ffffff 100%);
+            padding: 25px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            margin-bottom: 15px;
+        }
+        
+        .analysis-item:hover {
+            transform: translateX(5px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.2);
+        }
+        
+        .analysis-item.active {
+            transform: translateX(5px) scale(1.02);
+            box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4);
+        }
+        
+        .analysis-item.single {
+            border-left: none;
+            border: 2px solid rgba(102, 126, 234, 0.3);
+            cursor: default;
+        }
+        
+        .analysis-item.single:hover {
+            transform: none;
+        }
+        
+        .analysis-item.quote-style {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            text-align: center;
+            padding: 40px;
+            font-size: 24px;
+            font-weight: 600;
+            letter-spacing: 2px;
+            line-height: 1.8;
+        }
+        
+        .analysis-item.quote-style p {
+            color: white;
+            font-size: 24px;
+        }
+        
+        /* 谁能旺你 - 社交配对样式 */
+        .quote-container {
+            display: flex;
+            gap: 30px;
+            align-items: flex-start;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        
+        .quote-image-container {
+            flex: 0 0 300px;
+            border: 3px solid rgba(255, 255, 255, 0.2);
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+        }
+        
+        .quote-image-container img {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+        
+        .social-match-content {
+            flex: 1;
+            color: white;
+            padding: 20px;
+        }
+        
+        .match-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .match-icon {
+            font-size: 36px;
+        }
+        
+        .match-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: white;
+            margin: 0;
+        }
+        
+        .match-subtitle {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .match-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        
+        .match-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            border-left: 4px solid;
+            transition: all 0.3s ease;
+        }
+        
+        .match-item:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateX(5px);
+        }
+        
+        .match-item.positive {
+            border-left-color: #2ecc71;
+        }
+        
+        .match-item.negative {
+            border-left-color: #e74c3c;
+        }
+        
+        .match-status {
+            font-size: 32px;
+            flex-shrink: 0;
+        }
+        
+        .match-info {
+            flex: 1;
+        }
+        
+        .match-type {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+        
+        .match-desc {
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            margin-bottom: 5px;
+        }
+        
+        .match-percentage {
+            font-size: 18px;
+            color: rgba(255, 255, 255, 0.9);
+            font-weight: 600;
+        }
+        
+        .match-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            padding-top: 20px;
+            border-top: 2px solid rgba(255, 255, 255, 0.2);
+            gap: 20px;
+        }
+        
+        .footer-text {
+            flex: 1;
+        }
+        
+        .footer-text p {
+            margin: 8px 0;
+            font-size: 16px;
+            color: rgba(255, 255, 255, 0.8);
+            text-align: left;
+        }
+        
+        .qr-code-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            flex-shrink: 0;
+            background: white;
+            border-radius: 10px;
+            padding: 5px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .qr-code-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            border-radius: 5px;
+        }
+        
+        .qr-placeholder {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 5px;
+        }
+        
+        .qr-icon {
+            font-size: 32px;
+            margin-bottom: 5px;
+        }
+        
+        .qr-text {
+            font-size: 12px;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .analysis-item h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-size: 22px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .analysis-item h3::before {
+            content: '';
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+        
+        .analysis-item[data-type="forehead"] {
+            border-left-color: #9b59b6;
+        }
+        
+        .analysis-item[data-type="forehead"] h3 {
+            border-bottom-color: #9b59b6;
+        }
+        
+        .analysis-item[data-type="forehead"] h3::before {
+            background: #9b59b6;
+            box-shadow: 0 0 10px #9b59b6;
+        }
+        
+        .analysis-item[data-type="eyebrow"] {
+            border-left-color: #3498db;
+        }
+        
+        .analysis-item[data-type="eyebrow"] h3 {
+            border-bottom-color: #3498db;
+        }
+        
+        .analysis-item[data-type="eyebrow"] h3::before {
+            background: #3498db;
+            box-shadow: 0 0 10px #3498db;
+        }
+        
+        .analysis-item[data-type="eye"] {
+            border-left-color: #1abc9c;
+        }
+        
+        .analysis-item[data-type="eye"] h3 {
+            border-bottom-color: #1abc9c;
+        }
+        
+        .analysis-item[data-type="eye"] h3::before {
+            background: #1abc9c;
+            box-shadow: 0 0 10px #1abc9c;
+        }
+        
+        .analysis-item[data-type="nose"] {
+            border-left-color: #f39c12;
+        }
+        
+        .analysis-item[data-type="nose"] h3 {
+            border-bottom-color: #f39c12;
+        }
+        
+        .analysis-item[data-type="nose"] h3::before {
+            background: #f39c12;
+            box-shadow: 0 0 10px #f39c12;
+        }
+        
+        .analysis-item[data-type="lip"] {
+            border-left-color: #e74c3c;
+        }
+        
+        .analysis-item[data-type="lip"] h3 {
+            border-bottom-color: #e74c3c;
+        }
+        
+        .analysis-item[data-type="lip"] h3::before {
+            background: #e74c3c;
+            box-shadow: 0 0 10px #e74c3c;
+        }
+        
+        /* 引用文献样式 */
+        .reference {
+            display: block;
+            margin-top: 10px;
+            font-size: 13px;
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        .reference:empty {
+            display: none;
+        }
+        
+        .analysis-item p {
+            color: #34495e;
+            line-height: 2;
+            font-size: 16px;
+            text-align: justify;
+        }
+        
+        
+        .buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 30px;
+        }
+        
+        button {
+            padding: 14px 35px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+        
+        .btn-secondary {
+            background: linear-gradient(135deg, #95a5a6 0%, #7f8c8d 100%);
+            color: white;
+            box-shadow: 0 4px 15px rgba(149, 165, 166, 0.4);
+        }
+        
+        .btn-secondary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(149, 165, 166, 0.6);
+        }
+        
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            h1 {
+                font-size: 28px;
+                margin-bottom: 20px;
+            }
+            
+            .destiny-overview {
+                padding: 35px 25px;
+                margin-bottom: 35px;
+            }
+            
+            .destiny-overview h2 {
+                font-size: 24px;
+                letter-spacing: 3px;
+            }
+            
+            .destiny-overview p {
+                font-size: 16px;
+                letter-spacing: 1px;
+            }
+            
+            .image-container {
+                max-width: 100%;
+            }
+            
+            .section-tabs {
+                grid-template-columns: 1fr 1fr;
+                gap: 15px;
+            }
+            
+            .tab-btn {
+                font-size: 16px;
+                padding: 20px 15px;
+            }
+            
+            .analysis-item {
+                padding: 20px;
+            }
+            
+            .analysis-item h3 {
+                font-size: 18px;
+            }
+            
+            .analysis-item p {
+                font-size: 14px;
+            }
+            
+            .analysis-item.quote-style {
+                padding: 30px 20px;
+                font-size: 20px;
+            }
+            
+            .analysis-item.quote-style p {
+                font-size: 20px;
+            }
+            
+            /* 谁能旺你响应式 */
+            .quote-container {
+                flex-direction: column;
+                padding: 20px;
+                gap: 20px;
+            }
+            
+            .quote-image-container {
+                flex: 0 0 auto;
+                width: 100%;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+            
+            .match-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            
+            .match-title {
+                font-size: 22px;
+            }
+            
+            .match-subtitle {
+                font-size: 18px;
+            }
+            
+            .match-type {
+                font-size: 18px;
+            }
+            
+            .match-desc {
+                font-size: 14px;
+            }
+            
+            .match-percentage {
+                font-size: 16px;
+            }
+            
+            .match-footer {
+                flex-direction: column;
+                align-items: center;
+                gap: 15px;
+            }
+            
+            .footer-text {
+                text-align: center;
+            }
+            
+            .footer-text p {
+                text-align: center;
+            }
+            
+            .qr-code-container {
+                width: 80px;
+                height: 80px;
+            }
+            
+            .buttons {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            button {
+                width: 100%;
+                padding: 12px 25px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景视频 -->
+    <video id="background-video" autoplay loop muted playsinline>
+        <source src="第二页16比9-1.mp4" type="video/mp4">
+    </video>
+    
+    <!-- 遮罩层 -->
+    <div class="overlay"></div>
+    
+    <div class="container">
+        <h1>FaceCode｜面码 - 面相解析结果</h1>
+        
+        <!-- 命运总览 - 顶部突出显示 -->
+        <div class="destiny-overview">
+            <h2 id="destiny-title">命运总览</h2>
+            <p id="destiny-content">加载中...</p>
+        </div>
+        
+        <!-- 照片区域 - 居中显示 -->
+            <div class="image-section">
+                <h3>您的照片</h3>
+                <div class="image-container">
+                    <img id="original-image" src="" alt="原始照片">
+                    <!-- 面相标注点 -->
+                <div class="face-marker marker-forehead" data-type="forehead" title="额头 - 天庭"></div>
+                <div class="face-marker marker-eyebrow" data-type="eyebrow" title="眉毛"></div>
+                <div class="face-marker marker-eye" data-type="eye" title="眼睛"></div>
+                <div class="face-marker marker-nose" data-type="nose" title="鼻子"></div>
+                <div class="face-marker marker-lip" data-type="lip" title="嘴唇"></div>
+                </div>
+            </div>
+            
+        <!-- 子板块区域 - 底部 -->
+            <div class="analysis-section">
+            <!-- 子板块按钮 -->
+            <div class="section-tabs">
+                <button class="tab-btn" data-section="facial">五官解读</button>
+                <button class="tab-btn" data-section="fortune">气运分析</button>
+                <button class="tab-btn" data-section="advice">修炼建议</button>
+                <button class="tab-btn" data-section="quote">谁能旺你</button>
+                </div>
+                
+            <!-- 内容区域 -->
+            <div class="section-content">
+                <!-- 空状态提示 -->
+                <div class="empty-state active">
+                    点击上方按钮查看详细解析
+                </div>
+                
+                <!-- 五官解读 -->
+                <div class="content-panel" data-panel="facial">
+                    <div class="analysis-item" data-type="forehead">
+                        <h3>额</h3>
+                        <p id="forehead-content">加载中...</p>
+                        <span class="reference" id="forehead-reference"></span>
+                </div>
+                    <div class="analysis-item" data-type="eyebrow">
+                        <h3>眉</h3>
+                        <p id="eyebrow-content">加载中...</p>
+                        <span class="reference" id="eyebrow-reference"></span>
+                    </div>
+                    <div class="analysis-item" data-type="eye">
+                        <h3>眼</h3>
+                        <p id="eye-content">加载中...</p>
+                        <span class="reference" id="eye-reference"></span>
+                    </div>
+                    <div class="analysis-item" data-type="nose">
+                        <h3>鼻</h3>
+                        <p id="nose-content">加载中...</p>
+                        <span class="reference" id="nose-reference"></span>
+                    </div>
+                    <div class="analysis-item" data-type="lip">
+                        <h3>唇</h3>
+                        <p id="lip-content">加载中...</p>
+                        <span class="reference" id="lip-reference"></span>
+                    </div>
+                </div>
+                
+                <!-- 气运分析 -->
+                <div class="content-panel" data-panel="fortune">
+                    <div class="analysis-item single">
+                        <p id="fortune-content">加载中...</p>
+                        <span class="reference" id="fortune-reference"></span>
+                    </div>
+                </div>
+                
+                <!-- 修炼建议 -->
+                <div class="content-panel" data-panel="advice">
+                    <div class="analysis-item single">
+                        <p id="advice-content">加载中...</p>
+                    </div>
+                </div>
+                
+                <!-- 谁能旺你 -->
+                <div class="content-panel" data-panel="quote">
+                    <div class="quote-container">
+                        <!-- 图片容器 -->
+                        <div class="quote-image-container">
+                            <img id="quote-image" src="" alt="面相照片">
+                        </div>
+                        <!-- 社交配对内容 -->
+                        <div class="social-match-content">
+                            <div class="match-header">
+                                <span class="match-icon">👥</span>
+                                <h3 class="match-title">社交配对直达</h3>
+                            </div>
+                            <div class="match-subtitle">你最适合交往：</div>
+                            <div class="match-list" id="match-list">
+                                <!-- 动态生成匹配项 -->
+                            </div>
+                            <div class="match-footer">
+                                <div class="footer-text">
+                                    <p>测测你的朋友→</p>
+                                    <p>看看配不配</p>
+                                </div>
+                                <div class="qr-code-container">
+                                    <img id="qr-code" src="assets/images/qrcode.png" alt="小程序码" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                    <div class="qr-placeholder">
+                                        <div class="qr-icon">📱</div>
+                                        <div class="qr-text">小程序码</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="buttons">
+            <button id="share-btn" class="btn-primary">分享结果</button>
+            <button id="save-btn" class="btn-secondary">保存到历史</button>
+            <button id="back-btn" class="btn-secondary">返回首页</button>
+        </div>
+    </div>
+    
+    <!-- 分享画布（隐藏） -->
+    <canvas id="share-canvas" style="display: none;"></canvas>
+    
+    <script src="js/config.js"></script>
+    <script src="js/storage.js"></script>
+    <script src="js/canvas.js"></script>
+    
+    <script>
+        function log(message, data = null) {
+            console.log(message, data);
+        }
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            log('========== 页面加载完成 ==========');
+            
+            // 获取结果数据
+            const resultData = Storage.getSessionData();
+            log('从 Session 获取的数据:', resultData);
+            
+            if (!resultData) {
+                log('❌ 没有找到结果数据');
+                alert('没有找到结果数据，请重新开始');
+                window.location.href = 'index.html';
+                return;
+            }
+            
+            log('✅ 数据验证通过');
+            log('图片数据长度: ' + (resultData.originalImage ? resultData.originalImage.length : 0));
+            log('分析结果:', resultData.analysis);
+            
+            // 显示图片
+            const originalImage = document.getElementById('original-image');
+            if (originalImage && resultData.originalImage) {
+                originalImage.src = resultData.originalImage;
+                log('✅ 图片已设置');
+            } else {
+                log('❌ 图片设置失败');
+            }
+            
+            // 显示分析结果
+            displayAnalysisResults(resultData.analysis);
+            
+            log('========== 结果显示完成 ==========');
+            
+            // 交互效果
+            setupInteractions();
+            
+            // 标签页切换
+            setupTabs();
+            
+            // 按钮事件
+            document.getElementById('back-btn').addEventListener('click', () => {
+                Storage.clearSessionData();
+                window.location.href = 'index.html';
+            });
+            
+            document.getElementById('save-btn').addEventListener('click', () => {
+                Storage.saveHistory(resultData);
+                alert('已保存到历史记录！');
+                log('✅ 已保存到历史');
+            });
+            
+            document.getElementById('share-btn').addEventListener('click', () => {
+                alert('分享功能开发中...');
+                log('分享按钮被点击');
+            });
+        });
+        
+        // 显示分析结果
+        function displayAnalysisResults(analysis) {
+            if (!analysis) {
+                log('❌ 分析结果为空');
+                return;
+            }
+            
+            log('开始解析数据，数据类型:', typeof analysis);
+            log('数据键名:', Object.keys(analysis));
+            
+            // 命运总览
+            if (analysis.命运总览) {
+                const content = analysis.命运总览.内容 || analysis.命运总览;
+                const destinyEl = document.getElementById('destiny-content');
+                if (destinyEl) {
+                    destinyEl.textContent = content;
+                    log('✅ 命运总览已设置:', content);
+                }
+            } else {
+                log('⚠️ 未找到命运总览数据');
+            }
+            
+            // 五官解读
+            if (analysis.五官解读) {
+                log('找到五官解读数据');
+                const facialMap = {
+                    '额': 'forehead',
+                    '眉': 'eyebrow',
+                    '眼': 'eye',
+                    '鼻': 'nose',
+                    '唇': 'lip'
+                };
+                
+                Object.keys(facialMap).forEach(key => {
+                    const englishKey = facialMap[key];
+                    if (analysis.五官解读[key]) {
+                        const item = analysis.五官解读[key];
+                        const content = typeof item === 'object' ? (item.描述 || '') : item;
+                        const reference = typeof item === 'object' ? (item.典籍 || '') : '';
+                        
+                        const contentEl = document.getElementById(`${englishKey}-content`);
+                        const referenceEl = document.getElementById(`${englishKey}-reference`);
+                        
+                        if (contentEl && content) {
+                            contentEl.textContent = content;
+                            log(`✅ ${key}的内容已设置:`, content);
+                        }
+                        if (referenceEl && reference) {
+                            referenceEl.textContent = reference;
+                            log(`✅ ${key}的典籍已设置:`, reference);
+                        }
+                    } else {
+                        log(`⚠️ 未找到${key}的数据`);
+                    }
+                });
+            } else {
+                log('⚠️ 未找到五官解读数据');
+            }
+            
+            // 气运分析
+            if (analysis.气运分析) {
+                const item = analysis.气运分析;
+                const content = typeof item === 'object' ? (item.内容 || '') : item;
+                const reference = typeof item === 'object' ? (item.典籍 || '') : '';
+                
+                const contentEl = document.getElementById('fortune-content');
+                const referenceEl = document.getElementById('fortune-reference');
+                
+                if (contentEl && content) {
+                    contentEl.textContent = content;
+                    log('✅ 气运分析已设置:', content);
+                }
+                if (referenceEl && reference) {
+                    referenceEl.textContent = reference;
+                }
+            } else {
+                log('⚠️ 未找到气运分析数据');
+            }
+            
+            // 修炼建议
+            if (analysis.修炼建议) {
+                const content = typeof analysis.修炼建议 === 'object' ? (analysis.修炼建议.内容 || '') : analysis.修炼建议;
+                const contentEl = document.getElementById('advice-content');
+                if (contentEl && content) {
+                    contentEl.textContent = content;
+                    log('✅ 修炼建议已设置:', content);
+                }
+            } else {
+                log('⚠️ 未找到修炼建议数据');
+            }
+            
+            // 传播金句
+            if (analysis.传播金句) {
+                const content = typeof analysis.传播金句 === 'object' ? (analysis.传播金句.内容 || '') : analysis.传播金句;
+                const contentEl = document.getElementById('quote-content');
+                if (contentEl && content) {
+                    contentEl.textContent = content;
+                    log('✅ 传播金句已设置:', content);
+                }
+            } else {
+                log('⚠️ 未找到传播金句数据');
+            }
+            
+            log('========== 数据解析完成 ==========');
+        }
+        
+        // 设置标签页切换
+        function setupTabs() {
+            const tabBtns = document.querySelectorAll('.tab-btn');
+            const contentPanels = document.querySelectorAll('.content-panel');
+            const emptyState = document.querySelector('.empty-state');
+            
+            tabBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const section = btn.getAttribute('data-section');
+                    
+                    // 隐藏空状态提示
+                    if (emptyState) {
+                        emptyState.classList.remove('active');
+                        emptyState.style.display = 'none';
+                    }
+                    
+                    // 切换按钮状态
+                    tabBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // 切换内容面板
+                    contentPanels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.getAttribute('data-panel') === section) {
+                            panel.classList.add('active');
+                        }
+                    });
+                    
+                    // 如果切换到谁能旺你，设置图片和生成匹配内容
+                    if (section === 'quote') {
+                        setupQuotePanel();
+                    }
+                    
+                    log(`切换到标签页: ${section}`);
+                });
+            });
+        }
+        
+        // 设置谁能旺你面板
+        function setupQuotePanel() {
+            const resultData = Storage.getSessionData();
+            if (!resultData) return;
+            
+            // 设置图片
+            const quoteImage = document.getElementById('quote-image');
+            if (quoteImage && resultData.originalImage) {
+                quoteImage.src = resultData.originalImage;
+                log('✅ 谁能旺你图片已设置');
+            }
+            
+            // 生成社交配对内容
+            generateSocialMatches(resultData.analysis);
+        }
+        
+        // 生成社交配对匹配项
+        function generateSocialMatches(analysis) {
+            const matchList = document.getElementById('match-list');
+            if (!matchList) return;
+            
+            // 示例匹配数据 - 可以根据面相分析结果动态生成
+            const matches = [
+                {
+                    type: '眉长过目型',
+                    description: '重情义',
+                    percentage: 94,
+                    positive: true
+                },
+                {
+                    type: '鼻梁挺直型',
+                    description: '靠谱实干',
+                    percentage: 88,
+                    positive: true
+                },
+                {
+                    type: '三白眼型',
+                    description: '性格极端',
+                    percentage: 12,
+                    positive: false
+                }
+            ];
+            
+            // 清空现有内容
+            matchList.innerHTML = '';
+            
+            // 生成匹配项
+            matches.forEach(match => {
+                const matchItem = document.createElement('div');
+                matchItem.className = `match-item ${match.positive ? 'positive' : 'negative'}`;
+                
+                matchItem.innerHTML = `
+                    <div class="match-status">${match.positive ? '✅' : '❌'}</div>
+                    <div class="match-info">
+                        <div class="match-type">${match.type}</div>
+                        <div class="match-desc">${match.description}</div>
+                        <div class="match-percentage">匹配度 ${match.percentage}%</div>
+                    </div>
+                `;
+                
+                matchList.appendChild(matchItem);
+            });
+            
+            log('✅ 社交配对内容已生成');
+        }
+        
+        
+        // 设置交互效果
+        function setupInteractions() {
+            log('设置交互效果...');
+            
+            const markers = document.querySelectorAll('.face-marker');
+            const analysisItems = document.querySelectorAll('.analysis-item:not(.single)');
+            
+            // 标注点悬停效果 - 只在五官解读面板中生效
+            markers.forEach(marker => {
+                marker.addEventListener('mouseenter', () => {
+                    const type = marker.getAttribute('data-type');
+                    const facialPanel = document.querySelector('.content-panel[data-panel="facial"]');
+                    if (facialPanel && facialPanel.classList.contains('active')) {
+                    highlightAnalysis(type);
+                    }
+                });
+                
+                marker.addEventListener('mouseleave', () => {
+                    clearHighlight();
+                });
+                
+                // 点击标注点自动打开五官解读并高亮对应项
+                marker.addEventListener('click', () => {
+                    const type = marker.getAttribute('data-type');
+                    switchToFacialTab();
+                    setTimeout(() => {
+                        highlightAnalysis(type);
+                        // 滚动到对应的卡片
+                        const item = document.querySelector(`.analysis-item[data-type="${type}"]`);
+                        if (item) {
+                            item.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        }
+                    }, 300);
+                });
+            });
+            
+            // 分析卡片悬停效果
+            analysisItems.forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    const type = item.getAttribute('data-type');
+                    if (type) {
+                    highlightMarker(type);
+                    item.classList.add('active');
+                    }
+                });
+                
+                item.addEventListener('mouseleave', () => {
+                    clearMarkerHighlight();
+                    item.classList.remove('active');
+                });
+            });
+            
+            log('✅ 交互效果设置完成');
+        }
+        
+        // 切换到五官解读标签页
+        function switchToFacialTab() {
+            const facialBtn = document.querySelector('.tab-btn[data-section="facial"]');
+            if (facialBtn) {
+                facialBtn.click();
+            }
+        }
+        
+        // 高亮对应的分析卡片
+        function highlightAnalysis(type) {
+            const item = document.querySelector(`.analysis-item[data-type="${type}"]`);
+            if (item) {
+                item.classList.add('active');
+                item.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        }
+        
+        // 清除分析卡片高亮
+        function clearHighlight() {
+            document.querySelectorAll('.analysis-item').forEach(item => {
+                item.classList.remove('active');
+            });
+        }
+        
+        // 高亮对应的标注点
+        function highlightMarker(type) {
+            const marker = document.querySelector(`.face-marker[data-type="${type}"]`);
+            if (marker) {
+                marker.style.transform = 'translate(-50%, -50%) scale(1.8)';
+                marker.style.zIndex = '20';
+            }
+        }
+        
+        // 清除标注点高亮
+        function clearMarkerHighlight() {
+            document.querySelectorAll('.face-marker').forEach(marker => {
+                marker.style.transform = 'translate(-50%, -50%) scale(1)';
+                marker.style.zIndex = '1';
+            });
+        }
+    </script>
+</body>
+</html>
+

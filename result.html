@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>面相解析结果 - FaceCode</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/carousel.css">
     <link rel="stylesheet" href="css/result-layout.css">
     <link rel="stylesheet" href="css/responsive.css">
 </head>
@@ -19,22 +18,6 @@
             <!-- 原始图片 -->
             <div id="original-image-container" class="content-box">
                 <img id="original-image" src="" alt="原始照片">
-            </div>
-
-            <!-- 变老图片轮播 -->
-            <div id="aged-images-carousel" class="content-box">
-                <div class="carousel-container">
-                    <button class="carousel-btn prev" id="carousel-prev">‹</button>
-                    <div class="carousel-track-container">
-                        <div class="carousel-track" id="carousel-track">
-                            <!-- 动态插入变老图片 -->
-                        </div>
-                    </div>
-                    <button class="carousel-btn next" id="carousel-next">›</button>
-                </div>
-                <div class="carousel-indicators" id="carousel-indicators">
-                    <!-- 动态插入指示器 -->
-                </div>
             </div>
 
             <!-- 姻缘解析 -->
@@ -78,7 +61,6 @@
 
     <script src="js/config.js"></script>
     <script src="js/storage.js"></script>
-    <script src="js/carousel.js"></script>
     <script src="js/canvas.js"></script>
     <script src="js/result.js"></script>
 </body>

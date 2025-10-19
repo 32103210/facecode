@@ -4,8 +4,10 @@ const CONFIG = {
   API_BASE_URL: 'http://localhost:3000/api',
   
   // 视频资源配置
-  BACKGROUND_VIDEO: 'assets/videos/background.mp4',  // 首页视频底图路径
-  LOADING_VIDEO: 'assets/videos/loading.mp4',  // 加载页预加载视频路径
+  WELCOME_VIDEO: '第一页16比9带logohd.mp4',  // 欢迎页视频底图路径
+  TRANSITION_VIDEO: '加白转场v2.mp4',  // 过渡页视频路径
+  BACKGROUND_VIDEO: '第二页16比9-1.mp4',  // 拍摄页视频底图路径
+  LOADING_VIDEO: '第二页16比9-1.mp4',  // 加载页预加载视频路径（临时使用底图视频）
   
   // 结果页 UI 配置
   RESULT_UI_IMAGE: 'assets/images/result-ui.png',  // 结果页 UI 框架图片路径
@@ -56,6 +58,9 @@ const CONFIG = {
   REQUEST_TIMEOUT: 30000,  // 30秒
   
   // Mock 模式（开发时使用）
-  MOCK_MODE: true  // 设置为 true 时使用模拟数据
+  MOCK_MODE: true,  // 设置为 true 时使用模拟数据
+  
+  // 调试模式
+  USE_SIMPLE_RESULT: true  // 使用简化版结果页便于调试
 };
 

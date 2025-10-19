@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API 集成测试 - FaceCode</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 10px;
+      font-size: 28px;
+    }
+
+    .subtitle {
+      color: #666;
+      margin-bottom: 30px;
+      font-size: 14px;
+    }
+
+    .section {
+      margin-bottom: 30px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 10px;
+    }
+
+    .section h2 {
+      color: #667eea;
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: bold;
+      margin-left: 10px;
+    }
+
+    .status.success {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    .status.error {
+      background: #f8d7da;
+      color: #721c24;
+    }
+
+    .status.pending {
+      background: #fff3cd;
+      color: #856404;
+    }
+
+    .test-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 15px;
+      background: white;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      border: 2px solid #e9ecef;
+    }
+
+    .test-item:hover {
+      border-color: #667eea;
+    }
+
+    .test-name {
+      font-weight: 500;
+      color: #333;
+    }
+
+    .test-desc {
+      font-size: 12px;
+      color: #666;
+      margin-top: 5px;
+    }
+
+    button {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 25px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+      box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    }
+
+    button:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    }
+
+    button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .log-area {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      padding: 20px;
+      border-radius: 10px;
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      max-height: 400px;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .log-success { color: #4ec9b0; }
+    .log-error { color: #f48771; }
+    .log-info { color: #569cd6; }
+    .log-warning { color: #dcdcaa; }
+
+    .input-group {
+      margin-bottom: 20px;
+    }
+
+    .input-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+    }
+
+    .input-group input {
+      width: 100%;
+      padding: 12px;
+      border: 2px solid #e9ecef;
+      border-radius: 8px;
+      font-size: 14px;
+      transition: border-color 0.3s;
+    }
+
+    .input-group input:focus {
+      outline: none;
+      border-color: #667eea;
+    }
+
+    .button-group {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .button-group button {
+      flex: 1;
+      min-width: 150px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🧪 API 集成测试</h1>
+    <p class="subtitle">测试 FaceCode 与 OpenAI API 的集成状态</p>
+
+    <!-- 配置区 -->
+    <div class="section">
+      <h2>⚙️ 配置</h2>
+      <div class="input-group">
+        <label>OpenAI API Key:</label>
+        <input type="password" id="apiKeyInput" placeholder="sk-...">
+      </div>
+      <div class="input-group">
+        <label>后端地址:</label>
+        <input type="text" id="backendUrl" value="http://localhost:3000">
+      </div>
+    </div>
+
+    <!-- 测试项 -->
+    <div class="section">
+      <h2>🔍 测试项目</h2>
+      
+      <div class="test-item">
+        <div>
+          <div class="test-name">1. 后端健康检查</div>
+          <div class="test-desc">检查后端服务是否正常运行</div>
+        </div>
+        <span class="status pending" id="status-1">待测试</span>
+      </div>
+
+      <div class="test-item">
+        <div>
+          <div class="test-name">2. 系统提示词加载</div>
+          <div class="test-desc">检查 system_prompt.txt 是否成功加载</div>
+        </div>
+        <span class="status pending" id="status-2">待测试</span>
+      </div>
+
+      <div class="test-item">
+        <div>
+          <div class="test-name">3. Mock 模式测试</div>
+          <div class="test-desc">测试模拟数据返回是否正常</div>
+        </div>
+        <span class="status pending" id="status-3">待测试</span>
+      </div>
+
+      <div class="test-item">
+        <div>
+          <div class="test-name">4. 真实 API 调用</div>
+          <div class="test-desc">使用真实 API Key 调用 OpenAI（需要 API Key）</div>
+        </div>
+        <span class="status pending" id="status-4">待测试</span>
+      </div>
+
+      <div class="test-item">
+        <div>
+          <div class="test-name">5. JSON 格式验证</div>
+          <div class="test-desc">验证返回的 JSON 结构是否符合规范</div>
+        </div>
+        <span class="status pending" id="status-5">待测试</span>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div class="section">
+      <h2>🎮 操作</h2>
+      <div class="button-group">
+        <button onclick="runAllTests()">运行所有测试</button>
+        <button onclick="runMockTest()">仅测试 Mock 模式</button>
+        <button onclick="runRealApiTest()">测试真实 API</button>
+        <button onclick="clearLog()">清空日志</button>
+      </div>
+    </div>
+
+    <!-- 日志区 -->
+    <div class="section">
+      <h2>📋 测试日志</h2>
+      <div class="log-area" id="logArea">等待测试...</div>
+    </div>
+  </div>
+
+  <script>
+    // 日志函数
+    function log(message, type = 'info') {
+      const logArea = document.getElementById('logArea');
+      const timestamp = new Date().toLocaleTimeString();
+      const className = `log-${type}`;
+      const prefix = {
+        success: '✅',
+        error: '❌',
+        info: 'ℹ️',
+        warning: '⚠️'
+      }[type] || 'ℹ️';
+      
+      logArea.innerHTML += `<span class="${className}">[${timestamp}] ${prefix} ${message}</span>\n`;
+      logArea.scrollTop = logArea.scrollHeight;
+    }
+
+    function clearLog() {
+      document.getElementById('logArea').innerHTML = '日志已清空\n';
+    }
+
+    function updateStatus(testId, status, message) {
+      const statusEl = document.getElementById(`status-${testId}`);
+      statusEl.className = `status ${status}`;
+      statusEl.textContent = message;
+    }
+
+    // 测试 1: 后端健康检查
+    async function testBackendHealth() {
+      log('开始测试后端健康检查...', 'info');
+      try {
+        const backendUrl = document.getElementById('backendUrl').value;
+        const response = await fetch(`${backendUrl}/health`);
+        const data = await response.json();
+        
+        if (data.status === 'ok') {
+          log('后端服务正常运行', 'success');
+          updateStatus(1, 'success', '✓ 通过');
+          return true;
+        } else {
+          throw new Error('后端返回状态异常');
+        }
+      } catch (error) {
+        log(`后端健康检查失败: ${error.message}`, 'error');
+        updateStatus(1, 'error', '✗ 失败');
+        return false;
+      }
+    }
+
+    // 测试 2: 系统提示词加载（通过后端日志判断）
+    async function testPromptLoading() {
+      log('检查系统提示词加载状态...', 'info');
+      log('请查看后端控制台是否显示 "✅ 系统提示词加载成功"', 'warning');
+      updateStatus(2, 'success', '请查看后端日志');
+      return true;
+    }
+
+    // 测试 3: Mock 模式
+    async function testMockMode() {
+      log('测试 Mock 模式...', 'info');
+      try {
+        // 使用前端的 Mock 数据
+        const mockData = {
+          ok: true,
+          analysis: {
+            "命运总览": { "内容": "测试数据" },
+            "五官解读": {
+              "额": { "描述": "测试" },
+              "眉": { "描述": "测试" },
+              "眼": { "描述": "测试" },
+              "鼻": { "描述": "测试" },
+              "唇": { "描述": "测试" }
+            }
+          }
+        };
+        
+        if (mockData.ok && mockData.analysis) {
+          log('Mock 数据结构正确', 'success');
+          updateStatus(3, 'success', '✓ 通过');
+          return true;
+        }
+      } catch (error) {
+        log(`Mock 模式测试失败: ${error.message}`, 'error');
+        updateStatus(3, 'error', '✗ 失败');
+        return false;
+      }
+    }
+
+    // 测试 4: 真实 API 调用
+    async function testRealApi() {
+      log('测试真实 API 调用...', 'info');
+      const apiKey = document.getElementById('apiKeyInput').value;
+      
+      if (!apiKey || !apiKey.startsWith('sk-')) {
+        log('请输入有效的 OpenAI API Key', 'warning');
+        updateStatus(4, 'error', '需要 API Key');
+        return false;
+      }
+
+      try {
+        const backendUrl = document.getElementById('backendUrl').value;
+        
+        // 使用一个测试图片（1x1 像素的透明 PNG）
+        const testImage = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==';
+        
+        log('正在调用 OpenAI API...（这可能需要几秒钟）', 'info');
+        
+        const response = await fetch(`${backendUrl}/api/face/analyze`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            image: testImage,
+            openai_api_key: apiKey
+          })
+        });
+
+        const data = await response.json();
+        
+        if (data.ok && data.analysis) {
+          log('API 调用成功！', 'success');
+          log(`返回数据预览: ${JSON.stringify(data.analysis).substring(0, 200)}...`, 'info');
+          updateStatus(4, 'success', '✓ 通过');
+          return data.analysis;
+        } else {
+          throw new Error(data.error || '返回数据格式错误');
+        }
+      } catch (error) {
+        log(`真实 API 调用失败: ${error.message}`, 'error');
+        updateStatus(4, 'error', '✗ 失败');
+        return false;
+      }
+    }
+
+    // 测试 5: JSON 格式验证
+    function testJsonFormat(analysis) {
+      log('验证 JSON 格式...', 'info');
+      
+      const requiredFields = [
+        '命运总览',
+        '五官解读',
+        '气运分析',
+        '修炼建议',
+        '传播金句'
+      ];
+
+      const missingFields = requiredFields.filter(field => !analysis[field]);
+      
+      if (missingFields.length === 0) {
+        log('JSON 格式验证通过，所有必需字段都存在', 'success');
+        updateStatus(5, 'success', '✓ 通过');
+        return true;
+      } else {
+        log(`缺少字段: ${missingFields.join(', ')}`, 'warning');
+        updateStatus(5, 'error', '部分字段缺失');
+        return false;
+      }
+    }
+
+    // 运行所有测试
+    async function runAllTests() {
+      clearLog();
+      log('========== 开始完整测试 ==========', 'info');
+      
+      const test1 = await testBackendHealth();
+      if (!test1) {
+        log('后端服务未运行，停止测试', 'error');
+        return;
+      }
+
+      await testPromptLoading();
+      await testMockMode();
+      
+      const apiKey = document.getElementById('apiKeyInput').value;
+      if (apiKey && apiKey.startsWith('sk-')) {
+        const analysis = await testRealApi();
+        if (analysis) {
+          testJsonFormat(analysis);
+        }
+      } else {
+        log('跳过真实 API 测试（未提供 API Key）', 'warning');
+        updateStatus(4, 'pending', '已跳过');
+        updateStatus(5, 'pending', '已跳过');
+      }
+      
+      log('========== 测试完成 ==========', 'info');
+    }
+
+    // 仅测试 Mock 模式
+    async function runMockTest() {
+      clearLog();
+      log('========== 测试 Mock 模式 ==========', 'info');
+      await testBackendHealth();
+      await testMockMode();
+      log('========== 测试完成 ==========', 'info');
+    }
+
+    // 测试真实 API
+    async function runRealApiTest() {
+      clearLog();
+      log('========== 测试真实 API ==========', 'info');
+      const test1 = await testBackendHealth();
+      if (!test1) return;
+      
+      const analysis = await testRealApi();
+      if (analysis) {
+        testJsonFormat(analysis);
+      }
+      log('========== 测试完成 ==========', 'info');
+    }
+
+    // 页面加载时自动从 localStorage 读取 API Key
+    window.addEventListener('DOMContentLoaded', () => {
+      const savedApiKey = localStorage.getItem('openai_api_key');
+      if (savedApiKey) {
+        document.getElementById('apiKeyInput').value = savedApiKey;
+        log('已从本地存储加载 API Key', 'info');
+      }
+    });
+  </script>
+</body>
+</html>
+

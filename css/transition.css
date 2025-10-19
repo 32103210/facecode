@@ -1,0 +1,58 @@
+/* 过渡页面样式 */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    overflow: hidden;
+    height: 100vh;
+}
+
+/* 过渡视频 */
+.transition-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    animation: fadeIn 1.5s ease-out forwards;
+    z-index: 10;
+    transition: opacity 1.5s ease-in-out;
+}
+
+/* 淡出状态 - 慢速淡出，与下一页视频交叉溶解 */
+.transition-background.fade-out {
+    opacity: 0;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 0.5;
+    }
+    100% {
+        opacity: 1;
+    }
+}
+
+/* 调试信息 */
+.debug-overlay {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0, 0, 0, 0.8);
+    color: #0f0;
+    padding: 20px;
+    font-family: monospace;
+    font-size: 14px;
+    z-index: 100;
+    border-radius: 8px;
+    max-width: 400px;
+}
+
