@@ -61,6 +61,7 @@ const CONFIG = {
   MOCK_MODE: true,  // 设置为 true 时使用模拟数据
   
   // 调试模式
+  DEBUG_MODE: false,  // 设置为 true 时输出详细调试信息
   USE_SIMPLE_RESULT: true  // 使用简化版结果页便于调试
 };
 

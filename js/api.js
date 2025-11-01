@@ -77,15 +77,54 @@ const API = {
         clearTimeout(timeoutId);
 
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          // 尝试获取错误详情
+          let errorMessage = `HTTP error! status: ${response.status}`;
+          try {
+            const errorData = await response.json();
+            if (errorData.error) {
+              errorMessage = errorData.error;
+            }
+          } catch (e) {
+            // 无法解析错误响应，使用默认消息
+          }
+          throw new Error(errorMessage);
         }
 
-        return await response.json();
+        const result = await response.json();
+        
+        // 调试模式：保存原始响应
+        if (CONFIG.DEBUG_MODE) {
+          console.log('🔍 [DEBUG] API 原始响应:', result);
+          try {
+            localStorage.setItem('last_api_response', JSON.stringify(result, null, 2));
+            console.log('🔍 [DEBUG] 响应已保存到 localStorage.last_api_response');
+          } catch (e) {
+            console.warn('无法保存调试信息到localStorage:', e);
+          }
+        }
+        
+        return result;
       } catch (error) {
         if (i === retries) {
+          console.error('❌ API 调用失败:', error.message);
+          
+          // 调试模式：保存错误信息
+          if (CONFIG.DEBUG_MODE) {
+            try {
+              localStorage.setItem('last_api_error', JSON.stringify({
+                message: error.message,
+                stack: error.stack,
+                timestamp: new Date().toISOString()
+              }, null, 2));
+              console.log('🔍 [DEBUG] 错误信息已保存到 localStorage.last_api_error');
+            } catch (e) {
+              console.warn('无法保存错误信息到localStorage:', e);
+            }
+          }
+          
           throw error;
         }
-        console.log(`请求失败，正在重试 (${i + 1}/${retries})...`);
+        console.log(`⚠️ 请求失败，正在重试 (${i + 1}/${retries})...`, error.message);
         await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)));
       }
     }

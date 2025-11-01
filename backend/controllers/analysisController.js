@@ -2,15 +2,23 @@ const axios = require('axios');
 const fs = require('fs');
 const path = require('path');
 
-// 读取系统提示词
+// 读取简化版系统提示词
 let SYSTEM_PROMPT = '';
 try {
-  const promptPath = path.join(__dirname, '../../prompt/system_prompt.txt');
+  const promptPath = path.join(__dirname, '../../prompt/simple_system_prompt.txt');
   SYSTEM_PROMPT = fs.readFileSync(promptPath, 'utf-8');
-  console.log('✅ 系统提示词加载成功');
+  console.log('✅ 简化版系统提示词加载成功');
 } catch (error) {
   console.warn('⚠️ 无法加载系统提示词，使用默认提示词');
-  SYSTEM_PROMPT = '你是一位精通道家面相学的AI命理分析师，请根据用户上传的面部图像，生成一份完整的面相分析报告。';
+  SYSTEM_PROMPT = `你是一位精通道家面相学的AI命理分析师。请根据面部图像生成JSON格式的面相分析，包含以下字段：
+  {
+    "命运总览": {"内容": "40-60字"},
+    "五官解读": {"额": {"描述": "25-40字"}, "眉": {"描述": "25-40字"}, "眼": {"描述": "25-40字"}, "鼻": {"描述": "25-40字"}, "唇": {"描述": "25-40字"}},
+    "气运分析": {"内容": "50-80字"},
+    "修炼建议": {"内容": "50-80字"},
+    "传播金句": {"内容": "12-20字"}
+  }
+  只输出JSON，不要markdown标记。`;
 }
 
 /**
@@ -43,7 +51,30 @@ exports.analyzeFace = async (req, res) => {
           content: [
             {
               type: 'text',
-              text: '请根据这张人脸图片，按照系统提示词中的JSON结构规范，生成完整的面相分析报告。请直接返回JSON格式的结果，不要包含任何其他文字。'
+              text: `请根据这张人脸图片进行面相分析。
+
+要求：
+1. 必须严格按照以下JSON格式输出
+2. 不要使用markdown代码块（不要\`\`\`json\`\`\`包裹）
+3. 只输出纯JSON对象，不要任何解释文字
+4. 确保所有必需字段都存在
+
+必需的JSON结构：
+{
+  "命运总览": {"内容": "40-60字的命运概述"},
+  "五官解读": {
+    "额": {"描述": "25-40字", "典籍": "可选"},
+    "眉": {"描述": "25-40字", "典籍": "可选"},
+    "眼": {"描述": "25-40字", "典籍": "可选"},
+    "鼻": {"描述": "25-40字", "典籍": "可选"},
+    "唇": {"描述": "25-40字", "典籍": "可选"}
+  },
+  "气运分析": {"内容": "50-80字的运势分析"},
+  "修炼建议": {"内容": "50-80字的调理建议"},
+  "传播金句": {"内容": "12-20字的有趣金句"}
+}
+
+现在开始分析，只输出JSON：`
             },
             {
               type: 'image_url',
@@ -64,18 +95,23 @@ exports.analyzeFace = async (req, res) => {
     });
 
     const content = response.data.choices[0].message.content;
-    console.log('✅ OpenAI 返回内容:', content.substring(0, 200) + '...');
+    console.log('✅ OpenAI 返回内容（前500字符）:', content.substring(0, 500));
+    console.log('📏 返回内容总长度:', content.length);
     
-    // 解析 JSON
+    // 解析 JSON - 增强版
     let analysis;
     try {
-      // 尝试提取 JSON（可能被包裹在 ```json ``` 中）
-      const jsonMatch = content.match(/```json\s*([\s\S]*?)\s*```/) || content.match(/\{[\s\S]*\}/);
-      const jsonStr = jsonMatch ? (jsonMatch[1] || jsonMatch[0]) : content;
-      analysis = JSON.parse(jsonStr);
+      analysis = parseAIResponse(content);
+      console.log('✅ JSON 解析成功');
+      
+      // 验证必需字段
+      validateAnalysisStructure(analysis);
+      console.log('✅ 数据结构验证通过');
+      
     } catch (parseError) {
-      console.error('❌ JSON 解析失败:', parseError);
-      throw new Error('AI 返回的内容格式不正确');
+      console.error('❌ JSON 解析或验证失败:', parseError.message);
+      console.error('原始返回内容:', content);
+      throw new Error(`AI 返回的内容格式不正确: ${parseError.message}`);
     }
 
     res.json({
@@ -95,56 +131,116 @@ exports.analyzeFace = async (req, res) => {
       });
     }
     
-    // 开发模式下返回模拟数据
-    console.log('⚠️ 返回模拟数据用于测试...');
-    
-    const mockAnalysis = {
-      ok: true,
-      analysis: {
-        "命运总览": {
-          "内容": "你的面藏风水，气自成局；命中注定不是随波逐流的人。"
-        },
-        "五官解读": {
-          "额": {
-            "描述": "天庭宽阔，志在高远",
-            "典籍": "出自《柳庄相法·三停论》"
-          },
-          "眉": {
-            "描述": "眉形柔中带锋，有主见亦有温度"
-          },
-          "眼": {
-            "描述": "目光藏笑，是温柔的策士"
-          },
-          "鼻": {
-            "描述": "鼻正气顺，财缘自稳",
-            "典籍": "见《神相全编》"
-          },
-          "唇": {
-            "描述": "唇色和气，言语有福"
-          }
-        },
-        "气运分析": {
-          "内容": "气聚中庭，贵人运渐起；你或许已站在转机之前，只待一句真心的话语成全未来。近期宜静观其变，顺势而为，切勿强求。"
-        },
-        "修炼建议": {
-          "内容": "静坐三息，观心而不执；凡事不急，运自来。若有不顺，宜以光亮之物相伴，晨起面东而立，纳清气以养神。"
-        },
-        "传播金句": {
-          "内容": "命里藏buff，天生开挂脸。"
-        }
-      }
-    };
-
-    res.json(mockAnalysis);
-
-  } catch (error) {
-    console.error('Analysis API error:', error);
-    res.status(500).json({
+    // 其他错误返回通用错误信息
+    return res.status(500).json({
       ok: false,
       error: error.message || 'Failed to analyze face'
     });
   }
 };
+
+/**
+ * 解析AI返回的内容，提取JSON
+ */
+function parseAIResponse(content) {
+  let jsonStr = content.trim();
+  
+  // 步骤1: 移除markdown代码块标记
+  // 匹配 ```json ... ``` 或 ``` ... ```
+  const codeBlockMatch = jsonStr.match(/```(?:json)?\s*([\s\S]*?)\s*```/);
+  if (codeBlockMatch) {
+    jsonStr = codeBlockMatch[1].trim();
+    console.log('📝 检测到markdown代码块，已提取');
+  }
+  
+  // 步骤2: 如果还有其他文本，尝试提取第一个完整的JSON对象
+  if (!jsonStr.startsWith('{')) {
+    const jsonObjectMatch = jsonStr.match(/\{[\s\S]*\}/);
+    if (jsonObjectMatch) {
+      jsonStr = jsonObjectMatch[0];
+      console.log('📝 从文本中提取JSON对象');
+    }
+  }
+  
+  // 步骤3: 清理可能的前后空白和干扰字符
+  jsonStr = jsonStr.trim();
+  
+  // 步骤4: 尝试解析JSON
+  try {
+    const parsed = JSON.parse(jsonStr);
+    return parsed;
+  } catch (error) {
+    // 尝试修复常见的JSON错误
+    console.log('⚠️ 首次解析失败，尝试修复...');
+    
+    // 移除可能的BOM标记
+    jsonStr = jsonStr.replace(/^\uFEFF/, '');
+    
+    // 尝试再次解析
+    try {
+      const parsed = JSON.parse(jsonStr);
+      console.log('✅ 修复后解析成功');
+      return parsed;
+    } catch (secondError) {
+      throw new Error(`JSON解析失败: ${secondError.message}`);
+    }
+  }
+}
+
+/**
+ * 验证分析结果的数据结构
+ */
+function validateAnalysisStructure(analysis) {
+  const requiredFields = ['命运总览', '五官解读', '气运分析', '修炼建议', '传播金句'];
+  const missingFields = [];
+  
+  // 检查一级字段
+  for (const field of requiredFields) {
+    if (!analysis[field]) {
+      missingFields.push(field);
+    }
+  }
+  
+  if (missingFields.length > 0) {
+    throw new Error(`缺少必需字段: ${missingFields.join(', ')}`);
+  }
+  
+  // 检查命运总览
+  if (!analysis.命运总览.内容 || typeof analysis.命运总览.内容 !== 'string') {
+    throw new Error('命运总览.内容 字段无效');
+  }
+  
+  // 检查五官解读
+  const facialParts = ['额', '眉', '眼', '鼻', '唇'];
+  const missingParts = [];
+  
+  for (const part of facialParts) {
+    if (!analysis.五官解读[part] || !analysis.五官解读[part].描述) {
+      missingParts.push(part);
+    }
+  }
+  
+  if (missingParts.length > 0) {
+    throw new Error(`五官解读缺少部位: ${missingParts.join(', ')}`);
+  }
+  
+  // 检查气运分析
+  if (!analysis.气运分析.内容 || typeof analysis.气运分析.内容 !== 'string') {
+    throw new Error('气运分析.内容 字段无效');
+  }
+  
+  // 检查修炼建议
+  if (!analysis.修炼建议.内容 || typeof analysis.修炼建议.内容 !== 'string') {
+    throw new Error('修炼建议.内容 字段无效');
+  }
+  
+  // 检查传播金句
+  if (!analysis.传播金句.内容 || typeof analysis.传播金句.内容 !== 'string') {
+    throw new Error('传播金句.内容 字段无效');
+  }
+  
+  console.log('✅ 所有必需字段验证通过');
+}
 
 /**
  * 内容审查函数

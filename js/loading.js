@@ -87,11 +87,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     navigateToResult();
 
   } catch (error) {
-    console.error('API 调用错误:', error);
-    statusElement.textContent = '分析失败，请重试';
+    console.error('❌ API 调用错误:', error);
+    
+    // 详细的错误信息
+    let errorDetail = error.message || '未知错误';
+    statusElement.textContent = `分析失败: ${errorDetail}`;
+    
+    // 调试模式：显示更多信息
+    if (CONFIG.DEBUG_MODE) {
+      console.log('🔍 [DEBUG] 错误详情:', {
+        message: error.message,
+        stack: error.stack,
+        sessionData: sessionData
+      });
+      
+      // 尝试从localStorage获取保存的错误信息
+      try {
+        const savedError = localStorage.getItem('last_api_error');
+        if (savedError) {
+          console.log('🔍 [DEBUG] 保存的错误信息:', JSON.parse(savedError));
+        }
+      } catch (e) {
+        // 忽略
+      }
+    }
     
     setTimeout(() => {
-      if (confirm('分析失败，是否返回重试？')) {
+      const errorMsg = `分析失败: ${errorDetail}\n\n是否返回重试？`;
+      if (confirm(errorMsg)) {
         window.location.href = 'index.html';
       }
     }, 2000);
